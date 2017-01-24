@@ -1,0 +1,26 @@
+size 640 480
+color red 1 0 0
+color blue .2 .2 .8
+color yellow 1 0.775 0.5431
+color white 1 1 1
+color black 0 0 0
+phong_shader red_shader red red white 50
+phong_shader blue_shader blue blue white 50
+phong_shader yellow_shader yellow yellow white 50
+sphere - -.2 0 -4.5 .2 yellow_shader
+sphere - .2 0 -1.5 .2 blue_shader
+sphere A 0 0 -6 1 blue_shader
+sphere B 0 0 -3 1 blue_shader
+sphere C 0 0 0 1 blue_shader
+union D A B blue_shader
+union E D C blue_shader
+sphere S 0 0 -3 2.3 blue_shader
+sphere T 0 0 0 1.1 blue_shader
+union U S T blue_shader
+difference - E U red_shader
+point_light -2 7 3 white 100
+point_light 3 5 -3 white 100
+ambient_light white .3
+enable_shadows 1
+recursion_depth_limit 10
+camera -1 1 4 0 0 0 0 1 0 70

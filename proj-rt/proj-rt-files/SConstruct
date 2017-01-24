@@ -1,0 +1,12 @@
+import os
+env = Environment(ENV = os.environ)
+
+env.Append(LIBS=["png"])
+env.Append(CXXFLAGS=["-std=c++11","-g","-Wall","-O3"])
+env.Append(LINKFLAGS=[])
+
+env.Program("ray_tracer",["boolean.cpp","camera.cpp",
+             "dump_png.cpp","flat_shader.cpp","main.cpp","parse.cpp",
+             "phong_shader.cpp","plane.cpp","reflective_shader.cpp",
+             "render_world.cpp","sphere.cpp"])
+

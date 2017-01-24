@@ -1,0 +1,17 @@
+size 640 480
+color red 1 0 0
+color blue .2 .2 .8
+color yellow 1 0.775 0.5431
+color white 1 1 1
+color black 0 0 0
+phong_shader red_shader red red white 50
+phong_shader blue_shader blue blue white 50
+sphere A 0 0 0 1 blue_shader
+sphere B 0 0 1 1 blue_shader
+difference - A B red_shader
+point_light -2 7 3 white 100
+point_light 3 5 -3 white 100
+ambient_light white .3
+enable_shadows 1
+recursion_depth_limit 10
+camera 0 1 4 0 0 0 0 1 0 70
