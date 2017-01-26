@@ -73,15 +73,7 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
 	vec3 z = camera.film_position + r * camera.horizontal_vector
 			+ s * camera.vertical_vector;
 	ray.direction = (z - ray.endpoint).normalized();
-	if (pixel_index[0] == 320)
-	{
-		std::cout << pixel_index[0] << "," << pixel_index[1] << ","
-				<< ray.endpoint << "," << ray.direction << std::endl;
-		std::cout<<camera.film_position<<","<<z<<std::endl;
-
-	}
 	vec3 color = Cast_Ray(ray, recursion_depth_limit);
-	//std::cout << pixel_index << "," << color << std::endl;
 	camera.Set_Pixel(pixel_index, Pixel_Color(color));
 }
 
