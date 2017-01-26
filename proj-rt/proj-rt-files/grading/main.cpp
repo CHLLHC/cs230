@@ -82,7 +82,7 @@ int main(int argc, char** argv)
         for(int i=0; i<height*width; i++)
         {
             vec3 a=From_Pixel(world.camera.colors[i]);
-            vec3 b=From_Pixel(world.camera.colors[i]);//From_Pixel(data_sol[i]);
+            vec3 b=From_Pixel(data_sol[i]);
             for(int c=0; c<3; c++)
             {
                 double e = fabs(a[c]-b[c]);

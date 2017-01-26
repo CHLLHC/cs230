@@ -41,7 +41,6 @@ Object* Render_World::Closest_Intersection(const Ray& ray, Hit& hit)
 				{
 					if ((cit2->t < hit.t) || (hit.t < 0))
 					{
-						std::cout << "hit" << std::endl;
 						hit.t = cit2->t;
 						hit.ray_exiting = cit2->ray_exiting;
 						hit.object = cit2->object; // Only premitive.
@@ -73,7 +72,7 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
 	vec3 z = camera.film_position + r * camera.horizontal_vector
 			+ s * camera.vertical_vector;
 	ray.direction = (z - ray.endpoint).normalized();
-	vec3 color = Cast_Ray(ray, recursion_depth_limit);
+	vec3 color = Cast_Ray(ray, 1);
 	camera.Set_Pixel(pixel_index, Pixel_Color(color));
 }
 
@@ -97,11 +96,10 @@ vec3 Render_World::Cast_Ray(const Ray& ray, int recursion_depth)
 		vec3 intersection_point = ray.endpoint + ray.direction * hit.t;
 		vec3 same_side_normal = hit.object->Normal(intersection_point);
 		color = hit.object->material_shader->Shade_Surface(ray,
-				intersection_point, same_side_normal, recursion_depth);
+				intersection_point, same_side_normal, recursion_depth + 1);
 	}
 	else
 	{
-		//std::cout<<"SKCEHC"<<std::endl;
 		if (background_shader != 0)
 		{
 			// TODO background shader.
