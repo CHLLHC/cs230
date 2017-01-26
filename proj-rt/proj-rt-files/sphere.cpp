@@ -10,15 +10,15 @@ bool Sphere::Intersection(const Ray& ray, std::vector<Hit>& hits) const
 	vec3 w = (ray.direction) / (ray.direction.magnitude());
 	vec3 v = u - c;
 	double temp = dot(w, v);
-	double D = (temp*temp - (v.magnitude_squared() - r * r));
+	double D = (temp * temp - (v.magnitude_squared() - r * r));
 	if (D < 0)
 	{
 		return false;
 	}
 	else
 	{
-		double t0 = dot(w, v) - sqrt(D);
-		double t1 = dot(w, v) + sqrt(D);
+		double t0 = - dot(w, v) - sqrt(D);
+		double t1 = - dot(w, v) + sqrt(D);
 		if (t1 < 0)
 		{
 			return false;

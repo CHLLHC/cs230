@@ -101,6 +101,7 @@ vec3 Render_World::Cast_Ray(const Ray& ray, int recursion_depth)
 	}
 	else
 	{
+		//std::cout<<"SKCEHC"<<std::endl;
 		if (background_shader != 0)
 		{
 			// TODO background shader.
