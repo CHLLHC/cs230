@@ -23,7 +23,8 @@ vec3 Phong_Shader::Shade_Surface(const Ray& ray, const vec3& intersection_point,
 			o_hit = world.Closest_Intersection(shoot_to_light, hit);
 			if (o_hit != 0)
 			{
-				double t_hit_light = ((*cit)->position - intersection_point).magnitude();
+				double t_hit_light =
+						((*cit)->position - intersection_point).magnitude();
 				if (hit.t < t_hit_light)
 				{
 					SeeLight = false;

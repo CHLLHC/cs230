@@ -52,6 +52,7 @@ int main(int argc, char** argv)
     // Useful for printing out information about a single pixel.
     if(test_x>=0 && test_y>=0)
     {
+    	std::cout<<"==========================="<<std::endl;
         // Set a global variable to indicate that we are debugging one pixel.
         // This way you can do: if(debug_pixel) cout<<lots<<of<<stuff<<here<<endl;
         debug_pixel = true;
