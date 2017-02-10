@@ -28,6 +28,7 @@ Object* Render_World::Closest_Intersection(const Ray& ray, Hit& hit)
 {
 	hit.t = -1;
 	Object* ret = 0;
+	//std::cout<<"==============Closest_Intersection"<<std::endl;
 	for (std::vector<Object*>::const_iterator cit = objects.begin();
 			cit != objects.end(); ++cit)
 	{
@@ -51,6 +52,7 @@ Object* Render_World::Closest_Intersection(const Ray& ray, Hit& hit)
 			}
 		}
 	}
+	//std::cout<<"Closest_Intersection=============="<<std::endl;
 	return ret;
 }
 
@@ -87,12 +89,14 @@ void Render_World::Render()
 // or the background color if there is no object intersection
 vec3 Render_World::Cast_Ray(const Ray& ray, int recursion_depth)
 {
+	//std::cout<<"==============INCAST"<<std::endl;
 	// TODO
 	vec3 color;
 	Hit hit;
 	Object* o = Closest_Intersection(ray, hit);
 	if (o != NULL)
 	{
+		//std::cout<<"Hit!"<<std::endl;
 		vec3 intersection_point = ray.endpoint + ray.direction * hit.t;
 		vec3 same_side_normal = hit.object->Normal(intersection_point);
 		if (hit.ray_exiting){
@@ -111,5 +115,6 @@ vec3 Render_World::Cast_Ray(const Ray& ray, int recursion_depth)
 		}
 	}
 // determine the color here
+	//std::cout<<"OUTCAST================="<<std::endl;
 	return color;
 }
