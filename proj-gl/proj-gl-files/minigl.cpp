@@ -34,7 +34,7 @@ inline void MGL_ERROR(const char* description)
 	exit(1);
 }
 
-MGLbool thisBegan=false;
+MGLbool thisBegan = false;
 MGLpoly_mode thisPoly;
 class CHL_Ver
 {
@@ -102,10 +102,10 @@ public:
 
 	void SetOne(MGLsize x, MGLsize y, MGLfloat z, MGLpixel p)
 	{
-		cout<<x<<","<<y<<","<<z<<endl;
+		cout << x << "," << y << "," << z << endl;
 		if (z > zBuf[pos(x, y)])
 		{
-			cout<<"HIT"<<endl;
+			cout << "HIT" << endl;
 			theBuf[pos(x, y)] = p;
 			zBuf[pos(x, y)] = z;
 		}
@@ -117,7 +117,7 @@ public:
 		{
 			MGL_ERROR("FATAL: OUT OF RANGE!, Gen by CHL_FrameBuf::pos");
 		}
-		return x * height + y;
+		return y * width + x;
 	}
 
 	vector<MGLpixel> theBuf;
@@ -127,9 +127,9 @@ public:
 
 void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3)
 {
-	cout<<"FillTri"<<endl;
+	cout << "FillTri" << endl;
 	MGLfloat bottom = t1.y, left = t1.x, top = t1.y, right = t1.x;
-	cout<<t2.x<<","<<t2.y<<","<<t3.x<<","<<t3.y<<endl;
+	cout << t2.x << "," << t2.y << "," << t3.x << "," << t3.y << endl;
 	if (t2.x < left)
 		left = t2.x;
 	if (t3.x < left)
@@ -156,7 +156,7 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3)
 	n.x = n.x / n_square;
 	n.y = n.y / n_square;
 	n.z = n.z / n_square;
-	cout<<left<<","<<right<<","<<bottom<<","<<top<<endl;
+	cout << left << "," << right << "," << bottom << "," << top << endl;
 	for (int i = floor(left); i < ceil(right); ++i)
 	{
 		for (int j = floor(bottom); j < ceil(top); ++j)
@@ -169,7 +169,7 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3)
 			MGLfloat beta = Dot(n, nb);
 			MGLfloat gamma = 1 - alpha - beta;
 
-			cout<<alpha<<","<<beta<<","<<gamma<<endl;
+			cout << alpha << "," << beta << "," << gamma << endl;
 			if ((alpha >= 0) && (beta >= 0) && (gamma >= 0))
 			{
 				//TODO color
@@ -182,7 +182,7 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3)
 CHL_Ver Sub_ViewPort(CHL_Ver input, MGLsize width, MGLsize height)
 {
 //STEP 4 IN Vertex_Transformation
-	cout<<input.x<<","<<input.y<<","<<input.z<<endl;
+	cout << input.x << "," << input.y << "," << input.z << endl;
 	input.x = (input.x * 0.5 + 0.5) * width;
 	input.y = (input.y * 0.5 + 0.5) * height;
 	input.z = (1.0 + input.z) * 0.5;
@@ -191,7 +191,7 @@ CHL_Ver Sub_ViewPort(CHL_Ver input, MGLsize width, MGLsize height)
 
 void RasterizeTri(CHL_FrameBuf &buffer)
 {
-	cout<<"D"<<endl;
+	cout << "D" << endl;
 	if (Transed_VertexChain.size() % 3 != 0)
 		MGL_ERROR("FATAL: Wrong Vertex counts, Gen by RasterizeTri");
 
@@ -213,8 +213,6 @@ CHL_Ver Transform(CHL_Ver input)
 	return input;
 }
 
-
-
 /**
  * Read pixel data starting with the pixel at coordinates
  * (0, 0), up to (width,  height), into the array
@@ -229,14 +227,14 @@ CHL_Ver Transform(CHL_Ver input)
  */
 void mglReadPixels(MGLsize width, MGLsize height, MGLpixel *data)
 {
-	cout<<"mglReadPixels"<<endl;
+	cout << "mglReadPixels" << endl;
 	if (thisBegan)
 		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglReadPixels");
 
 	CHL_FrameBuf thisBuf(width, height);
-	cout<<"B4"<<endl;
+	cout << "B4" << endl;
 	RasterizeTri(thisBuf);
-	cout<<"AFT"<<endl;
+	cout << "AFT" << endl;
 	for (MGLsize i = 0; i < width; i++)
 	{
 		for (MGLsize j = 0; j < height; ++j)
@@ -254,7 +252,7 @@ void mglReadPixels(MGLsize width, MGLsize height, MGLpixel *data)
  */
 void mglBegin(MGLpoly_mode mode)
 {
-	cout<<"What"<<endl;
+	cout << "What" << endl;
 	if (thisBegan)
 		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglBegin");
 
@@ -267,7 +265,7 @@ void mglBegin(MGLpoly_mode mode)
  */
 void mglEnd()
 {
-	cout<<"end"<<endl;
+	cout << "end" << endl;
 	if (!thisBegan)
 		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglEnd");
 
@@ -294,7 +292,7 @@ void mglVertex3(MGLfloat x, MGLfloat y, MGLfloat z)
 {
 	if (!thisBegan)
 		MGL_ERROR("Wrong, Gen by mglVertex3");
-	cout<<"mglVertex3 "<<x<<","<<y<<endl;
+	cout << "mglVertex3 " << x << "," << y << endl;
 //Trans
 
 	VertexChain_Buffer.push_back(CHL_Ver(x, y, z));
@@ -303,7 +301,7 @@ void mglVertex3(MGLfloat x, MGLfloat y, MGLfloat z)
 	{
 		if (VertexChain_Buffer.size() == 3)
 		{
-			cout<<VertexChain_Buffer[0].x<<endl;
+			cout << VertexChain_Buffer[0].x << endl;
 			Transed_VertexChain.push_back(VertexChain_Buffer[0]);
 			Transed_VertexChain.push_back(VertexChain_Buffer[1]);
 			Transed_VertexChain.push_back(VertexChain_Buffer[2]);
