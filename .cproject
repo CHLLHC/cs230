@@ -24,13 +24,16 @@
 							<targetPlatform id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform.519217885" isAbstract="false" name="GNU Autotools Target Platform" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform"/>
 							<builder id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder.981191589" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder"/>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure.1392877300" name="configure" superClass="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure">
-								<option id="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name.800395605" superClass="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name" value="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.2046990078" valueType="string"/>
+								<option id="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name.800395605" name="Name" superClass="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name" value="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.2046990078" valueType="string"/>
 							</tool>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.725684921" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen"/>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1039803274" name="GCC C Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc">
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.754597293" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.844333055" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp">
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1012694309" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1606356179" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 						</toolChain>
@@ -81,9 +84,6 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="cs230.org.eclipse.linuxtools.cdt.autotools.core.projectType.1787542986" name="GNU Autotools" projectType="org.eclipse.linuxtools.cdt.autotools.core.projectType"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
@@ -95,4 +95,13 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.2046990078;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.2046990078.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.844333055;cdt.managedbuild.tool.gnu.cpp.compiler.input.1606356179">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.2046990078;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.2046990078.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1039803274;cdt.managedbuild.tool.gnu.c.compiler.input.754597293">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 </cproject>
