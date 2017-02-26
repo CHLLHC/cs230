@@ -22,6 +22,7 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <list>
 
 /*
  * Cpoy from vec.h
@@ -310,11 +311,22 @@ public:
 			m[i] = o.m[i];
 	}
 
+	MGLMatrix & operator =(const MGLMatrix & rhs) {
+		//if (this == &rhs) {
+		//	return *this;
+		//}
+		for (int i = 0; i < 16; ++i)
+			m[i] = rhs.m[i];
+		return *this;
+	}
+
 	MGLfloat m[16];
 };
 
 MGLmatrix_mode thisMode;
 MGLMatrix thisMatrix[MGL_PROJECTION + 1];
+list<MGLMatrix> PROJ_MatrixStack;
+list<MGLMatrix> MV_MatrixStack;
 
 class CHL_FrameBuf {
 public:
@@ -390,7 +402,8 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
 			if ((alpha >= 0) && (beta >= 0) && (gamma >= 0)) {
 				//TODO color
 				vec3 p = alpha * t1.color + beta * t2.color + gamma * t3.color;
-				buffer.SetOne(i, j, 0, Make_Pixel(round(p[0]), round(p[1]), round(p[2])));
+				buffer.SetOne(i, j, 0,
+						Make_Pixel(round(p[0]), round(p[1]), round(p[2])));
 			}
 		}
 	}
@@ -546,6 +559,17 @@ void mglMatrixMode(MGLmatrix_mode mode) {
  * current matrix mode.
  */
 void mglPushMatrix() {
+	if (thisBegan) {
+		MGL_ERROR("GL_INVALID_OPERATION ,Gen by mglPushMatrix");
+	}
+
+	if (thisMode == MGL_MODELVIEW) {
+		MV_MatrixStack.push_back(thisMatrix[MGL_MODELVIEW]);
+	} else if (thisMode == MGL_PROJECTION) {
+		PROJ_MatrixStack.push_back(thisMatrix[MGL_PROJECTION]);
+	} else {
+		MGL_ERROR("CRITICAL, gen by mglPushMatrix");
+	}
 }
 
 /**
@@ -553,6 +577,28 @@ void mglPushMatrix() {
  * mode.
  */
 void mglPopMatrix() {
+	if (thisBegan) {
+		MGL_ERROR("GL_INVALID_OPERATION ,Gen by mglPopMatrix");
+	}
+
+	if (thisMode == MGL_MODELVIEW) {
+		if (MV_MatrixStack.size() < 1) {
+			MGL_ERROR("GL_STACK_UNDERFLOW ,Gen by mglPopMatrix");
+		} else {
+			thisMatrix[MGL_MODELVIEW] = *MV_MatrixStack.begin();
+			MV_MatrixStack.pop_front();
+		}
+	} else if (thisMode == MGL_PROJECTION) {
+		if (PROJ_MatrixStack.size() < 1) {
+			MGL_ERROR("GL_STACK_UNDERFLOW ,Gen by mglPopMatrix");
+		} else {
+			thisMatrix[MGL_PROJECTION] = *PROJ_MatrixStack.begin();
+			PROJ_MatrixStack.pop_front();
+		}
+	} else {
+		MGL_ERROR("CRITICAL, gen by mglPopMatrix");
+	}
+
 }
 
 /**
@@ -628,6 +674,16 @@ void mglRotate(MGLfloat angle, MGLfloat x, MGLfloat y, MGLfloat z) {
  * for the given scale factors.
  */
 void mglScale(MGLfloat x, MGLfloat y, MGLfloat z) {
+	if (thisBegan) {
+		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglScale");
+	}
+
+	MGLMatrix ScaleMatrix;
+	ScaleMatrix.m[0] = x;
+	ScaleMatrix.m[5] = x;
+	ScaleMatrix.m[10] = x;
+	mglMultMatrix(ScaleMatrix.m);
+
 }
 
 /**
