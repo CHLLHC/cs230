@@ -260,6 +260,7 @@ typedef vec<MGLfloat, 4> vec4;
 vec3 thisColor(1, 1, 1);
 MGLfloat thisFar = 1e10;
 MGLfloat thisNear = -(1e10);
+MGLsize thisWidth, thisHeight;
 
 class CHL_Ver {
 public:
@@ -359,7 +360,7 @@ public:
 	}
 
 	size_t pos(MGLsize x, MGLsize y) {
-		if ((x >= width) || (y >= height)) {
+		if ((x >= width) || (y >= height) || (x < 0) || (y < 0)) {
 			MGL_ERROR("FATAL: OUT OF RANGE!, Gen by CHL_FrameBuf::pos");
 		}
 		return y * width + x;
@@ -392,6 +393,16 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
 	t1.color *= 255;
 	t2.color *= 255;
 	t3.color *= 255;
+
+	if (left < 0)
+		left = 0.1;		//floor
+	if (right >= thisWidth)
+		right = thisWidth - 1.5;		//ceil
+	if (bottom < 0)
+		bottom = 0.1;
+	if (top >= thisHeight)
+		top = thisHeight - 1.5;
+
 	for (int i = floor(left); i < ceil(right); ++i) {
 		for (int j = floor(bottom); j < ceil(top); ++j) {
 			vec3 p(i + 0.5, j + 0.5, 0);
@@ -427,7 +438,10 @@ void RasterizeTri(CHL_FrameBuf &buffer) {
 	if (Transed_VertexChain.size() % 3 != 0)
 		MGL_ERROR("FATAL: Wrong Vertex counts, Gen by RasterizeTri");
 
+	cout<<"NumOfVer"<<Transed_VertexChain.size()<<endl;
+	int k = 0;
 	for (size_t i = 0; i < Transed_VertexChain.size(); i += 3) {
+		k++;
 		FillTri(buffer,
 				Sub_ViewPort(Transed_VertexChain[i], buffer.width,
 						buffer.height),
@@ -436,7 +450,7 @@ void RasterizeTri(CHL_FrameBuf &buffer) {
 				Sub_ViewPort(Transed_VertexChain[i + 2], buffer.width,
 						buffer.height));
 	}
-
+	cout<<"NumOfTri"<<k<<endl;
 }
 
 vec4 Mat_Ver(MGLMatrix matrix, vec4 vertex) {
@@ -467,6 +481,8 @@ void mglReadPixels(MGLsize width, MGLsize height, MGLpixel *data) {
 	if (thisBegan)
 		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglReadPixels");
 
+	thisWidth = width;
+	thisHeight = height;
 	CHL_FrameBuf thisBuf(width, height, thisNear, thisFar);
 	RasterizeTri(thisBuf);
 	for (MGLsize i = 0; i < width; i++) {
