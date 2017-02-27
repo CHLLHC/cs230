@@ -258,6 +258,8 @@ MGLpoly_mode thisPoly;
 typedef vec<MGLfloat, 3> vec3;
 typedef vec<MGLfloat, 4> vec4;
 vec3 thisColor(1, 1, 1);
+MGLfloat thisFar = 1e10;
+MGLfloat thisNear = -(1e10);
 
 class CHL_Ver {
 public:
@@ -331,12 +333,12 @@ list<MGLMatrix> MV_MatrixStack;
 class CHL_FrameBuf {
 public:
 
-	CHL_FrameBuf(MGLsize width, MGLsize height) :
-			width(width), height(height) {
+	CHL_FrameBuf(MGLsize width, MGLsize height, MGLfloat near, MGLfloat far) :
+			width(width), height(height), near(near), far(far) {
 		for (MGLsize i = 0; i < width; ++i) {
 			for (MGLsize j = 0; j < height; ++j) {
 				MGLpixel black = Make_Pixel(0, 0, 0);
-				MGLfloat far_away = -(1e8);
+				MGLfloat far_away = far + 1;
 				theBuf.push_back(black);
 				zBuf.push_back(far_away);
 			}
@@ -349,10 +351,11 @@ public:
 	}
 
 	void SetOne(MGLsize x, MGLsize y, MGLfloat z, MGLpixel p) {
-		if (z > zBuf[pos(x, y)]) {
-			theBuf[pos(x, y)] = p;
-			zBuf[pos(x, y)] = z;
-		}
+		if ((z < far) && (z > near))
+			if (z < zBuf[pos(x, y)]) {
+				theBuf[pos(x, y)] = p;
+				zBuf[pos(x, y)] = z;
+			}
 	}
 
 	size_t pos(MGLsize x, MGLsize y) {
@@ -365,6 +368,7 @@ public:
 	vector<MGLpixel> theBuf;
 	vector<MGLfloat> zBuf;
 	MGLsize width, height;
+	MGLfloat near, far;
 };
 
 void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
@@ -388,7 +392,6 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
 	t1.color *= 255;
 	t2.color *= 255;
 	t3.color *= 255;
-
 	for (int i = floor(left); i < ceil(right); ++i) {
 		for (int j = floor(bottom); j < ceil(top); ++j) {
 			vec3 p(i + 0.5, j + 0.5, 0);
@@ -402,7 +405,9 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
 			if ((alpha >= 0) && (beta >= 0) && (gamma >= 0)) {
 				//TODO color
 				vec3 p = alpha * t1.color + beta * t2.color + gamma * t3.color;
-				buffer.SetOne(i, j, 0,
+				MGLfloat z = alpha * t1.theVec[2] + beta * t2.theVec[2]
+						+ gamma * t3.theVec[2];
+				buffer.SetOne(i, j, z,
 						Make_Pixel(round(p[0]), round(p[1]), round(p[2])));
 			}
 		}
@@ -413,7 +418,8 @@ CHL_Ver Sub_ViewPort(CHL_Ver input, MGLsize width, MGLsize height) {
 //STEP 4 IN Vertex_Transformation
 	input.theVec[0] = (input.theVec[0] * 0.5 + 0.5) * width;
 	input.theVec[1] = (input.theVec[1] * 0.5 + 0.5) * height;
-	input.theVec[2] = (1.0 + input.theVec[2]) * 0.5;
+	//-1~1 => 0~1
+	//input.theVec[2] = (1.0 + input.theVec[2]) * 0.5;
 	return input;
 }
 
@@ -461,7 +467,7 @@ void mglReadPixels(MGLsize width, MGLsize height, MGLpixel *data) {
 	if (thisBegan)
 		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglReadPixels");
 
-	CHL_FrameBuf thisBuf(width, height);
+	CHL_FrameBuf thisBuf(width, height, thisNear, thisFar);
 	RasterizeTri(thisBuf);
 	for (MGLsize i = 0; i < width; i++) {
 		for (MGLsize j = 0; j < height; ++j) {
@@ -626,6 +632,12 @@ void mglLoadIdentity() {
  * where ai is the i'th entry of the array.
  */
 void mglLoadMatrix(const MGLfloat *matrix) {
+	if (thisBegan) {
+		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglLoadMatrix");
+	}
+	for (int i = 0; i < 16; ++i) {
+		thisMatrix[thisMode].m[i] = matrix[i];
+	}
 }
 
 /**
@@ -659,6 +671,16 @@ void mglMultMatrix(const MGLfloat *matrix) {
  * for the translation vector given by (x, y, z).
  */
 void mglTranslate(MGLfloat x, MGLfloat y, MGLfloat z) {
+	if (thisBegan) {
+		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglTranslate");
+	}
+
+	MGLMatrix TranslateMatrix;
+	TranslateMatrix.m[12] = x;
+	TranslateMatrix.m[13] = y;
+	TranslateMatrix.m[14] = z;
+	mglMultMatrix(TranslateMatrix.m);
+
 }
 
 /**
@@ -667,6 +689,30 @@ void mglTranslate(MGLfloat x, MGLfloat y, MGLfloat z) {
  * from the origin to the point (x, y, z).
  */
 void mglRotate(MGLfloat angle, MGLfloat x, MGLfloat y, MGLfloat z) {
+	if (thisBegan) {
+		MGL_ERROR("GL_INVALID_OPERATION, Gen by mglTranslate");
+	}
+
+	const MGLfloat pi = 3.1415926535897932384626433832795;
+	vec3 t(vec3(x, y, z).normalized());
+	x = t[0];
+	y = t[1];
+	z = t[2];
+	MGLfloat c = cos(angle / 180.0 * pi);
+	MGLfloat s = sin(angle / 180.0 * pi);
+
+	MGLMatrix RotateMatrix;
+	RotateMatrix.m[0] = x * x * (1 - c) + c;
+	RotateMatrix.m[1] = y * x * (1 - c) + z * s;
+	RotateMatrix.m[2] = x * z * (1 - c) - y * s;
+	RotateMatrix.m[4] = x * y * (1 - c) - z * s;
+	RotateMatrix.m[5] = y * y * (1 - c) + c;
+	RotateMatrix.m[6] = y * z * (1 - c) + x * s;
+	RotateMatrix.m[8] = x * z * (1 - c) + y * s;
+	RotateMatrix.m[9] = y * z * (1 - c) - x * s;
+	RotateMatrix.m[10] = z * z * (1 - c) + c;
+	mglMultMatrix(RotateMatrix.m);
+
 }
 
 /**
@@ -680,8 +726,8 @@ void mglScale(MGLfloat x, MGLfloat y, MGLfloat z) {
 
 	MGLMatrix ScaleMatrix;
 	ScaleMatrix.m[0] = x;
-	ScaleMatrix.m[5] = x;
-	ScaleMatrix.m[10] = x;
+	ScaleMatrix.m[5] = y;
+	ScaleMatrix.m[10] = z;
 	mglMultMatrix(ScaleMatrix.m);
 
 }
@@ -720,14 +766,16 @@ void mglOrtho(MGLfloat left, MGLfloat right, MGLfloat bottom, MGLfloat top,
 		MGL_ERROR("GL_INVALID_OPERATION");
 	}
 
+	thisNear = near;
+	thisFar = far;
+
 	MGLMatrix OrthoMatrix;
 	OrthoMatrix.m[0] = 2.0 / (right - left);
 	OrthoMatrix.m[5] = 2.0 / (top - bottom);
-	OrthoMatrix.m[10] = -2.0 / (far - near);
+	OrthoMatrix.m[10] = (-2.0) / (far - near);
 	OrthoMatrix.m[12] = (right + left) / (left - right);
 	OrthoMatrix.m[13] = (top + bottom) / (bottom - top);
 	OrthoMatrix.m[14] = (far + near) / (near - far);
-
 	mglMultMatrix(OrthoMatrix.m);
 }
 
