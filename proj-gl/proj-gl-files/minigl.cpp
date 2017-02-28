@@ -13,6 +13,8 @@
  * https://www.opengl.org/sdk/docs/man2/
  * Note that you will only be implementing a subset of this.  In particular,
  * you only need to implement enough to pass the tests in the suite.
+ *
+ * CHL 2017-2-28 Passed
  */
 
 #include "minigl.h"
