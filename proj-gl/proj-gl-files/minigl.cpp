@@ -456,7 +456,6 @@ void ClipAgainst(vector<CHL_Ver>& input, vec4 normal, vec4 p) {
 	vector<CHL_Ver> in(input);
 	input.clear();
 
-	cout<<"IN:"<<in.size()<<endl;
 	for (size_t i = 0; i < in.size(); i += 3) {
 		CHL_Ver A = in[i];
 		CHL_Ver B = in[i + 1];
@@ -465,9 +464,6 @@ void ClipAgainst(vector<CHL_Ver>& input, vec4 normal, vec4 p) {
 		MGLfloat fa = dot(normal, A.theVec - p);
 		MGLfloat fb = dot(normal, B.theVec - p);
 		MGLfloat fc = dot(normal, C.theVec - p);
-
-		cout<<fa<<", "<<fb<<", "<<fc<<endl;
-		cout<<A.theVec<<", "<<B.theVec<<", "<<C.theVec<<endl;
 
 		unsigned int In = 0;
 		if (fa < 0)
@@ -497,7 +493,6 @@ void ClipAgainst(vector<CHL_Ver>& input, vec4 normal, vec4 p) {
 		}
 
 		CHL_Ver O, Q;
-		cout<<"CASE "<<In<<endl;
 		switch (In) {
 		case 7:
 			input.push_back(A);
@@ -561,8 +556,6 @@ void ClipAgainst(vector<CHL_Ver>& input, vec4 normal, vec4 p) {
 		}
 
 	}
-	cout<<"INPUT: "<<input.size()<<endl;
-
 }
 
 void ClipAndPush(vector<CHL_Ver> & input, const CHL_Ver& A, const CHL_Ver& B,
