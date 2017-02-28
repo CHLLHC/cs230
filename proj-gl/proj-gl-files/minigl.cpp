@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <iostream>
 #include <list>
+#include <stack>
 
 /*
  * Cpoy from vec.h
@@ -258,22 +259,20 @@ MGLpoly_mode thisPoly;
 typedef vec<MGLfloat, 3> vec3;
 typedef vec<MGLfloat, 4> vec4;
 vec3 thisColor(1, 1, 1);
-MGLfloat thisFar = 1e10;
-MGLfloat thisNear = -(1e10);
 MGLsize thisWidth, thisHeight;
 
 class CHL_Ver {
 public:
 	CHL_Ver() :
-			theVec(0, 0, 0, 1) {
+			theVec(0, 0, 0, 1), w(1) {
 	}
 	;
 	CHL_Ver(const CHL_Ver& b) :
-			theVec(b.theVec), color(b.color) {
+			theVec(b.theVec), color(b.color), w(b.w) {
 	}
 	;
 	CHL_Ver(MGLfloat x, MGLfloat y, MGLfloat z, const vec3& c) :
-			theVec(x, y, z, 1), color(c) {
+			theVec(x, y, z, 1), color(c), w(1) {
 	}
 	;
 
@@ -283,9 +282,10 @@ public:
 
 	vec4 theVec;
 	vec3 color;
+	MGLfloat w; //Useless before Norm_ViewPort;
 };
 vector<CHL_Ver> VertexChain_Buffer;
-vector<CHL_Ver> Transed_VertexChain;
+vector<CHL_Ver> VertexChain;
 
 /**
  * Init:
@@ -328,18 +328,18 @@ public:
 
 MGLmatrix_mode thisMode;
 MGLMatrix thisMatrix[MGL_PROJECTION + 1];
-list<MGLMatrix> PROJ_MatrixStack;
-list<MGLMatrix> MV_MatrixStack;
+stack<MGLMatrix> PROJ_MatrixStack;
+stack<MGLMatrix> MV_MatrixStack;
 
 class CHL_FrameBuf {
 public:
 
-	CHL_FrameBuf(MGLsize width, MGLsize height, MGLfloat near, MGLfloat far) :
-			width(width), height(height), near(near), far(far) {
+	CHL_FrameBuf(MGLsize width, MGLsize height) :
+			width(width), height(height) {
 		for (MGLsize i = 0; i < width; ++i) {
 			for (MGLsize j = 0; j < height; ++j) {
 				MGLpixel black = Make_Pixel(0, 0, 0);
-				MGLfloat far_away = far + 1;
+				MGLfloat far_away = 2;
 				theBuf.push_back(black);
 				zBuf.push_back(far_away);
 			}
@@ -352,7 +352,7 @@ public:
 	}
 
 	void SetOne(MGLsize x, MGLsize y, MGLfloat z, MGLpixel p) {
-		if ((z < far) && (z > near))
+		if ((z < 1) && (z > -1))
 			if (z < zBuf[pos(x, y)]) {
 				theBuf[pos(x, y)] = p;
 				zBuf[pos(x, y)] = z;
@@ -369,7 +369,6 @@ public:
 	vector<MGLpixel> theBuf;
 	vector<MGLfloat> zBuf;
 	MGLsize width, height;
-	MGLfloat near, far;
 };
 
 void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
@@ -397,11 +396,11 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
 	if (left < 0)
 		left = 0.1;		//floor
 	if (right >= thisWidth)
-		right = thisWidth - 1.5;		//ceil
+		right = thisWidth - 0.5;		//ceil
 	if (bottom < 0)
 		bottom = 0.1;
 	if (top >= thisHeight)
-		top = thisHeight - 1.5;
+		top = thisHeight - 0.5;
 
 	for (int i = floor(left); i < ceil(right); ++i) {
 		for (int j = floor(bottom); j < ceil(top); ++j) {
@@ -413,11 +412,18 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
 			MGLfloat beta = dot(n, nb);
 			MGLfloat gamma = 1 - alpha - beta;
 
+			MGLfloat da = alpha / t1.w;
+			MGLfloat db = beta / t2.w;
+			MGLfloat dc = gamma / t3.w;
+			MGLfloat k = da + db + dc;
+
 			if ((alpha >= 0) && (beta >= 0) && (gamma >= 0)) {
-				//TODO color
-				vec3 p = alpha * t1.color + beta * t2.color + gamma * t3.color;
 				MGLfloat z = alpha * t1.theVec[2] + beta * t2.theVec[2]
 						+ gamma * t3.theVec[2];
+				alpha = da / k;
+				beta = db / k;
+				gamma = dc / k;
+				vec3 p = alpha * t1.color + beta * t2.color + gamma * t3.color;
 				buffer.SetOne(i, j, z,
 						Make_Pixel(round(p[0]), round(p[1]), round(p[2])));
 			}
@@ -425,8 +431,11 @@ void FillTri(CHL_FrameBuf &buffer, CHL_Ver t1, CHL_Ver t2, CHL_Ver t3) {
 	}
 }
 
-CHL_Ver Sub_ViewPort(CHL_Ver input, MGLsize width, MGLsize height) {
-//STEP 4 IN Vertex_Transformation
+CHL_Ver Norm_ViewPort(CHL_Ver input, MGLsize width, MGLsize height) {
+	//Norm
+	input.w = input.theVec[3];
+	input.theVec /= input.theVec[3];
+	//STEP 4 IN Vertex_Transformation
 	input.theVec[0] = (input.theVec[0] * 0.5 + 0.5) * width;
 	input.theVec[1] = (input.theVec[1] * 0.5 + 0.5) * height;
 	//-1~1 => 0~1
@@ -434,23 +443,164 @@ CHL_Ver Sub_ViewPort(CHL_Ver input, MGLsize width, MGLsize height) {
 	return input;
 }
 
+CHL_Ver MulRatio(const CHL_Ver& A, const CHL_Ver& B, MGLfloat ratio) {
+	CHL_Ver ret;
+	ret.theVec = (1 - ratio) * A.theVec + ratio * B.theVec;
+	ret.color = (1 - ratio) * A.color + ratio * B.color;
+	return ret;
+}
+
+//clip against a pannel
+//return new triangles
+void ClipAgainst(vector<CHL_Ver>& input, vec4 normal, vec4 p) {
+	vector<CHL_Ver> in(input);
+	input.clear();
+
+	cout<<"IN:"<<in.size()<<endl;
+	for (size_t i = 0; i < in.size(); i += 3) {
+		CHL_Ver A = in[i];
+		CHL_Ver B = in[i + 1];
+		CHL_Ver C = in[i + 2];
+
+		MGLfloat fa = dot(normal, A.theVec - p);
+		MGLfloat fb = dot(normal, B.theVec - p);
+		MGLfloat fc = dot(normal, C.theVec - p);
+
+		cout<<fa<<", "<<fb<<", "<<fc<<endl;
+		cout<<A.theVec<<", "<<B.theVec<<", "<<C.theVec<<endl;
+
+		unsigned int In = 0;
+		if (fa < 0)
+			In = 1;
+		if (fb < 0)
+			In = In | 2;
+		if (fc < 0)
+			In = In | 4;
+
+		MGLfloat sAB = dot(normal, B.theVec - A.theVec);
+		if (sAB != 0) {
+			sAB = dot(normal, p - A.theVec) / sAB;
+		} else {
+			sAB = -1;	//Then treat as s<0
+		}
+		MGLfloat sAC = dot(normal, C.theVec - A.theVec);
+		if (sAC != 0) {
+			sAC = dot(normal, p - A.theVec) / sAC;
+		} else {
+			sAC = -1;	//Then treat as s<0
+		}
+		MGLfloat sBC = dot(normal, C.theVec - B.theVec);
+		if (sBC != 0) {
+			sBC = dot(normal, p - B.theVec) / sBC;
+		} else {
+			sBC = -1;	//Then treat as s<0
+		}
+
+		CHL_Ver O, Q;
+		cout<<"CASE "<<In<<endl;
+		switch (In) {
+		case 7:
+			input.push_back(A);
+			input.push_back(B);
+			input.push_back(C);
+			break;
+		case 6:
+			O = MulRatio(A, B, sAB);
+			Q = MulRatio(A, C, sAC);
+			input.push_back(O);
+			input.push_back(B);
+			input.push_back(C);
+			input.push_back(C);
+			input.push_back(Q);
+			input.push_back(O);
+			break;
+		case 5:
+			O = MulRatio(B, C, sBC);
+			Q = MulRatio(B, A, 1 - sAB);
+			input.push_back(O);
+			input.push_back(C);
+			input.push_back(A);
+			input.push_back(A);
+			input.push_back(Q);
+			input.push_back(O);
+			break;
+		case 4:
+			O = MulRatio(A, C, sAC);
+			Q = MulRatio(B, C, sBC);
+			input.push_back(C);
+			input.push_back(O);
+			input.push_back(Q);
+			break;
+		case 3:
+			O = MulRatio(C, B, 1 - sBC);
+			Q = MulRatio(C, A, 1 - sAC);
+			input.push_back(O);
+			input.push_back(B);
+			input.push_back(A);
+			input.push_back(A);
+			input.push_back(Q);
+			input.push_back(O);
+			break;
+		case 2:
+			O = MulRatio(A, B, sAB);
+			Q = MulRatio(C, B, 1 - sBC);
+			input.push_back(O);
+			input.push_back(B);
+			input.push_back(Q);
+			break;
+		case 1:
+			O = MulRatio(A, B, sAB);
+			Q = MulRatio(A, C, sAC);
+			input.push_back(A);
+			input.push_back(O);
+			input.push_back(Q);
+			break;
+		case 0:
+		default:
+			break;
+		}
+
+	}
+	cout<<"INPUT: "<<input.size()<<endl;
+
+}
+
+void ClipAndPush(vector<CHL_Ver> & input, const CHL_Ver& A, const CHL_Ver& B,
+		const CHL_Ver& C) {
+	//TODO
+	vector<CHL_Ver> tempVertex;
+	tempVertex.push_back(A);
+	tempVertex.push_back(B);
+	tempVertex.push_back(C);
+
+	vec4 SharedP;
+	vec4 zwn(0,0,1,-1);//Normal of z=w pannel
+	vec4 znwn(0,0,-1,-1);//Normal of z=-w pannel
+//	vec4 ywn(0,0,1,1);//Normal of y=w pannel
+//	vec4 ynwn(0,0,1,1);//Normal of y=-w pannel
+//	vec4 xwn(0,0,1,1);//Normal of x=w pannel
+//	vec4 xnwn(0,0,1,1);//Normal of x=-w pannel
+
+	ClipAgainst(tempVertex,zwn,SharedP);
+	ClipAgainst(tempVertex,znwn,SharedP);
+
+	for (size_t i = 0; i < tempVertex.size(); ++i) {
+		input.push_back(tempVertex[i]);
+	}
+
+}
+
 void RasterizeTri(CHL_FrameBuf &buffer) {
-	if (Transed_VertexChain.size() % 3 != 0)
+	if (VertexChain.size() % 3 != 0)
 		MGL_ERROR("FATAL: Wrong Vertex counts, Gen by RasterizeTri");
 
-	cout<<"NumOfVer"<<Transed_VertexChain.size()<<endl;
-	int k = 0;
-	for (size_t i = 0; i < Transed_VertexChain.size(); i += 3) {
-		k++;
+	for (size_t i = 0; i < VertexChain.size(); i += 3) {
 		FillTri(buffer,
-				Sub_ViewPort(Transed_VertexChain[i], buffer.width,
-						buffer.height),
-				Sub_ViewPort(Transed_VertexChain[i + 1], buffer.width,
-						buffer.height),
-				Sub_ViewPort(Transed_VertexChain[i + 2], buffer.width,
-						buffer.height));
+				Norm_ViewPort(VertexChain[i], buffer.width, buffer.height),
+				Norm_ViewPort(VertexChain[i + 1], buffer.width, buffer.height),
+				Norm_ViewPort(VertexChain[i + 2], buffer.width, buffer.height));
 	}
-	cout<<"NumOfTri"<<k<<endl;
+
 }
 
 vec4 Mat_Ver(MGLMatrix matrix, vec4 vertex) {
@@ -483,7 +633,7 @@ void mglReadPixels(MGLsize width, MGLsize height, MGLpixel *data) {
 
 	thisWidth = width;
 	thisHeight = height;
-	CHL_FrameBuf thisBuf(width, height, thisNear, thisFar);
+	CHL_FrameBuf thisBuf(width, height);
 	RasterizeTri(thisBuf);
 	for (MGLsize i = 0; i < width; i++) {
 		for (MGLsize j = 0; j < height; ++j) {
@@ -541,28 +691,26 @@ void mglVertex3(MGLfloat x, MGLfloat y, MGLfloat z) {
 	newOne.theVec = Mat_Ver(thisMatrix[MGL_MODELVIEW], newOne.theVec);
 	//Clip
 	newOne.theVec = Mat_Ver(thisMatrix[MGL_PROJECTION], newOne.theVec);
-	//Normalize
-	newOne.theVec = newOne.theVec / newOne.theVec[3];
+
+	//Normalize (devide w)
+	//newOne.theVec = newOne.theVec / newOne.theVec[3];
 
 	VertexChain_Buffer.push_back(newOne);
 
 	if (thisPoly == MGL_TRIANGLES) {
 		if (VertexChain_Buffer.size() == 3) {
-			Transed_VertexChain.push_back(VertexChain_Buffer[0]);
-			Transed_VertexChain.push_back(VertexChain_Buffer[1]);
-			Transed_VertexChain.push_back(VertexChain_Buffer[2]);
+			ClipAndPush(VertexChain, VertexChain_Buffer[0],
+					VertexChain_Buffer[1], VertexChain_Buffer[2]);
 			VertexChain_Buffer.clear();
 		}
 	} else {
 		if (VertexChain_Buffer.size() == 4) {
 			//First, CCW
-			Transed_VertexChain.push_back(VertexChain_Buffer[0]);
-			Transed_VertexChain.push_back(VertexChain_Buffer[1]);
-			Transed_VertexChain.push_back(VertexChain_Buffer[2]);
+			ClipAndPush(VertexChain, VertexChain_Buffer[0],
+					VertexChain_Buffer[1], VertexChain_Buffer[2]);
 			//Second, CCW
-			Transed_VertexChain.push_back(VertexChain_Buffer[0]);
-			Transed_VertexChain.push_back(VertexChain_Buffer[2]);
-			Transed_VertexChain.push_back(VertexChain_Buffer[3]);
+			ClipAndPush(VertexChain, VertexChain_Buffer[0],
+					VertexChain_Buffer[2], VertexChain_Buffer[3]);
 			VertexChain_Buffer.clear();
 		}
 	}
@@ -586,9 +734,9 @@ void mglPushMatrix() {
 	}
 
 	if (thisMode == MGL_MODELVIEW) {
-		MV_MatrixStack.push_back(thisMatrix[MGL_MODELVIEW]);
+		MV_MatrixStack.push(thisMatrix[MGL_MODELVIEW]);
 	} else if (thisMode == MGL_PROJECTION) {
-		PROJ_MatrixStack.push_back(thisMatrix[MGL_PROJECTION]);
+		PROJ_MatrixStack.push(thisMatrix[MGL_PROJECTION]);
 	} else {
 		MGL_ERROR("CRITICAL, gen by mglPushMatrix");
 	}
@@ -607,15 +755,15 @@ void mglPopMatrix() {
 		if (MV_MatrixStack.size() < 1) {
 			MGL_ERROR("GL_STACK_UNDERFLOW ,Gen by mglPopMatrix");
 		} else {
-			thisMatrix[MGL_MODELVIEW] = *MV_MatrixStack.begin();
-			MV_MatrixStack.pop_front();
+			thisMatrix[MGL_MODELVIEW] = MV_MatrixStack.top();
+			MV_MatrixStack.pop();
 		}
 	} else if (thisMode == MGL_PROJECTION) {
 		if (PROJ_MatrixStack.size() < 1) {
 			MGL_ERROR("GL_STACK_UNDERFLOW ,Gen by mglPopMatrix");
 		} else {
-			thisMatrix[MGL_PROJECTION] = *PROJ_MatrixStack.begin();
-			PROJ_MatrixStack.pop_front();
+			thisMatrix[MGL_PROJECTION] = PROJ_MatrixStack.top();
+			PROJ_MatrixStack.pop();
 		}
 	} else {
 		MGL_ERROR("CRITICAL, gen by mglPopMatrix");
@@ -781,9 +929,6 @@ void mglOrtho(MGLfloat left, MGLfloat right, MGLfloat bottom, MGLfloat top,
 	if (thisBegan) {
 		MGL_ERROR("GL_INVALID_OPERATION");
 	}
-
-	thisNear = near;
-	thisFar = far;
 
 	MGLMatrix OrthoMatrix;
 	OrthoMatrix.m[0] = 2.0 / (right - left);

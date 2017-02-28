@@ -2,8 +2,8 @@ import os
 env = Environment(ENV = os.environ)
 
 env.Append(LIBS=["png"])
-# env.Append(CXXFLAGS=["-std=c++11","-g","-Wall","-O3"])
-env.Append(CXXFLAGS=["-std=c++11","-g","-Wall"])
+env.Append(CXXFLAGS=["-std=c++11","-g","-Wall","-O3"])
+# env.Append(CXXFLAGS=["-std=c++11","-g","-Wall"])
 env.Append(LINKFLAGS=[])
 
 env_nogl = env.Clone()
