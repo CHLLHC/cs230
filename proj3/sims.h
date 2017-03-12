@@ -13,12 +13,7 @@
 class Simulation {
 public:
 	Simulation() :
-			m_delta_t(0), m_x(0), m_y(0) {
-
-	}
-
-	Simulation(FSszie x, FSszie y, FSFloat dt) :
-			m_delta_t(dt), m_x(x), m_y(y), m_grid(x, y) {
+			m_delta_t(0), m_duration(0), m_x(0), m_y(0) {
 
 	}
 
@@ -26,10 +21,12 @@ public:
 	void Set(FSszie x, FSszie y, FSFloat p, const FSF2D & u);
 	void SetWall(FSszie x, FSszie y, bool set, bool rightHandSide);
 	void Show(); //RunCallShow
-	bool ChangeDeltaT(FSFloat dt);
+	void ChangeDeltaT(FSFloat dt);
+	void ChangeGrid(FSszie x, FSszie y);
+	void ChangeDuration(FSFloat t);
 
 private:
-	FSFloat m_delta_t;
+	FSFloat m_delta_t, m_duration;
 	FSszie m_x, m_y;
 	Grid m_grid;
 };

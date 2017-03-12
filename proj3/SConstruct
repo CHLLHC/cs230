@@ -5,5 +5,5 @@ env.Append(CXXFLAGS=["-std=c++11","-Wall","-O3"])
 env.Append(CPPPATH=["../eigen3/"])
 env.Append(LINKFLAGS=[])
 
-env.Program("fluid_sims",["main.cpp"])
+env.Program("fluid_sims",["main.cpp","parse.cpp","sims.cpp"])
 
