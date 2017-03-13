@@ -20,21 +20,28 @@ void Parse(Simulation& sims, const char* test_file);
 int main(int argc, char** argv) {
 
 	const char* input_file = 0;
+	bool zoom = false;
 
 	while (1) {
-		int opt = getopt(argc, argv, "i:");
+		int opt = getopt(argc, argv, "i:m");
 		if (opt == -1)
 			break;
 		switch (opt) {
 		case 'i':
 			input_file = optarg;
 			break;
+		case 'm':
+			zoom = true;
+			break;
 		}
 	}
 	if (!input_file)
 		Usage(argv[0]);
 
-	Simulation sims;
+	Simulation sims(argc, argv);
+	if (zoom){
+		sims.SetMagnify();
+	}
 
 	Parse(sims, input_file);
 

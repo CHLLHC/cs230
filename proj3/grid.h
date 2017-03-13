@@ -21,19 +21,20 @@ typedef u_int32_t FSszie;
 class Cell {
 public:
 	Cell() :
-			m_u(0, 0), m_p(0), m_wall_right(false), m_wall_bottom(false) {
+			m_u(0, 0), m_p(1), m_wall_right(false), m_wall_bottom(false),m_fixP(false),m_fixU(false) {
 	}
 	Cell(FSF2D u, FSFloat p) :
-			m_u(u), m_p(p), m_wall_right(false), m_wall_bottom(false) {
+			m_u(u), m_p(1), m_wall_right(false), m_wall_bottom(false),m_fixP(false),m_fixU(false) {
 	}
 	Cell(const Cell& o) :
 			m_u(o.m_u), m_p(o.m_p), m_wall_right(o.m_wall_right), m_wall_bottom(
-					o.m_wall_bottom) {
+					o.m_wall_bottom),m_fixP(o.m_fixP),m_fixU(o.m_fixU) {
 	}
 
 	FSF2D m_u;
 	FSFloat m_p;
 	bool m_wall_right, m_wall_bottom;
+	bool m_fixP,m_fixU;
 };
 
 class Grid {

@@ -40,13 +40,19 @@ void Parse(Simulation& sims, const char* test_file) {
 			ss >> dt;
 			assert(ss);
 			sims.ChangeDeltaT(dt);
-		} else if (item == "cell") {
+		} else if (item == "cellp") {
 			FSszie x, y;
-			FSFloat p, vx, vy;
-			ss >> x >> y >> p >> vx >> vy;
+			FSFloat p;
+			ss >> x >> y >> p ;
+			assert(ss);
+			sims.SetP(x, y, p);
+		} else if (item == "cellu") {
+			FSszie x, y;
+			FSFloat vx, vy;
+			ss >> x >> y >> vx >> vy;
 			assert(ss);
 			FSF2D u(vx, vy);
-			sims.Set(x, y, p, u);
+			sims.SetU(x, y, u);
 		} else if (item == "wall") {
 			FSszie x, y;
 			int right;
