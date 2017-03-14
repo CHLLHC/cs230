@@ -10,6 +10,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#include <cmath>
 
 Simulation::Simulation(int argc, char** argv) :
 		m_argc(argc), m_argv(argv), m_delta_t(0), m_duration(0), m_x(320), m_y(
@@ -82,17 +83,127 @@ void Simulation::Advection() {
 	int _new_grid = 1 - m_now_grid;
 	for (FSszie i = 0; i < m_x; i++) {
 		for (FSszie j = 0; j < m_y; ++j) {
-			if (!m_grid[m_now_grid].m_array[getPos(i,j)].m_fixUPH){
-			m_grid[_new_grid].m_array[getPos(i,j)].m_uph = Interpolate
+			if (!m_grid[m_now_grid].m_array[getPos(i, j)].m_fixUPH) {
+//				//L1-+- R1
+//				//   U
+//				//L2-+- R2
+//				FSFloat L1 = 0, L2 = 0, R1 = 0, R2 = 0;
+//				if (j + 1 < m_y) {
+//					L1 = m_grid[m_now_grid].m_array[getPos(i, j + 1)].m_vph;
+//				}
+//				L2 = m_grid[m_now_grid].m_array[getPos(i, j)].m_vph;
+//				if ((i + 1 < m_x) && (j + 1 < m_y)) {
+//					L2 = m_grid[m_now_grid].m_array[getPos(i + 1, j + 1)].m_vph;
+//				}
+//				if (i + 1 < m_x) {
+//					L1 = m_grid[m_now_grid].m_array[getPos(i + 1, j)].m_vph;
+//				}
+//				FSFloat vUPH = (L1 + R1 + L2 + R2) / 4;
+				FSFloat ug,vg;
+				Interpolate(i+0.5,j,ug,vg);
+				FSFloat px = i+0.5 - m_delta_t * ug;
+				FSFloat py = j - m_delta_t * vg;
+				FSFloat up,vp;
+				Interpolate(px,py,up,vp);
+				m_grid[_new_grid].m_array[getPos(i, j)].m_uph = up;
 			}
+			if ()
+
+
 		}
 	}
 }
 
-FSFloat Simulation::Interpolate(FSFloat x, FSFloat y){
-	return 0;
-}
+void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
+	//For x
+	// 1 4
+	// 2 3
 
+	FSszie x1, x2, x3, x4, y1, y2, y3, y4;
+	x2 = floor(x - 0.5);
+	y2 = floor(y);
+
+	x1 = x2;
+	x3 = x2 + 1;
+	x4 = x3;
+
+	y1 = y2 + 1;
+	y3 = y2;
+	y4 = y1;
+
+	//alpha for x, beta for y
+	FSFloat alpha = x - x2 + 0.5;
+	FSFloat beta = y - y2;
+
+	int k = 0;
+	FSFloat u1 = 0, u2 = 0, u3 = 0, u4 = 0;
+	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y)) {
+		u1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_uph * (1 - alpha)
+				* beta;
+		k++;
+	}
+	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+		u2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_uph * (1 - alpha)
+				* (1 - beta);
+		k++;
+	}
+	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y)) {
+		u3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_uph * alpha
+				* (1 - beta);
+		k++;
+	}
+	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+		u4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_uph * alpha * beta;
+		k++;
+	}
+	assert(k == 0);
+	FSFloat newu = (u1 + u2 + u3 + u4) / k;
+
+	//For y
+	// 1 4
+	// 2 3
+	x2 = floor(x);
+	y2 = floor(y - 0.5);
+
+	x1 = x2;
+	x3 = x2 + 1;
+	x4 = x3;
+
+	y1 = y2 + 1;
+	y3 = y2;
+	y4 = y1;
+
+	//alpha for x, beta for y
+	alpha = x - x2;
+	beta = y - y2 + 0.5;
+
+	k = 0;
+	FSFloat v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y)) {
+		v1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_vph * (1 - alpha)
+				* beta;
+		k++;
+	}
+	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+		v2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_vph * (1 - alpha)
+				* (1 - beta);
+		k++;
+	}
+	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y)) {
+		v3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_vph * alpha
+				* (1 - beta);
+		k++;
+	}
+	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+		v4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_vph * alpha * beta;
+		k++;
+	}
+	assert(k == 0);
+	FSFloat newv = (v1 + v2 + v3 + v4) / k;
+
+	u = newu;
+	v = newv;
+}
 
 void Simulation::InitGL() {
 	glutInit(&m_argc, m_argv);

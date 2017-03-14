@@ -8,7 +8,7 @@
 #ifndef PROJ3_GRID_H_
 #define PROJ3_GRID_H_
 
-#include <Eigen/Dense>
+#include <Eigen/Sparse>
 #include <stdint.h>
 #include <vector>
 
@@ -21,7 +21,7 @@ class Cell {
 public:
 	Cell() :
 			m_uph(0), m_vph(0), m_p(1), m_wall_right(false), m_wall_bottom(
-					false), m_fixP(false), m_fixUPH(false),m_fixVPH(false) {
+					false), m_fixP(false), m_fixUPH(false), m_fixVPH(false) {
 	}
 	Cell(const Cell& o) :
 			m_uph(o.m_uph), m_vph(o.m_vph), m_p(o.m_p), m_wall_right(
@@ -29,7 +29,7 @@ public:
 					o.m_fixP), m_fixUPH(o.m_fixUPH), m_fixVPH(o.m_fixVPH) {
 	}
 
-	FSFloat m_uph, m_vph;
+	FSFloat m_uph, m_vph; //u(i+1/2,j) , v(i,j+1/2)
 	FSFloat m_p;
 	bool m_wall_right, m_wall_bottom;
 	bool m_fixP, m_fixUPH, m_fixVPH;

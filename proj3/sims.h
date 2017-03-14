@@ -41,8 +41,7 @@ private:
 	void Show();
 	void Display();
 
-	FSFloat Interpolate(FSFloat x, FSFloat y);
-
+	void Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v);
 
 private:
 	FSszie getPos(FSszie x, FSszie y);
