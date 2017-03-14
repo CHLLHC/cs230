@@ -52,8 +52,9 @@ public:
 	}
 	Grid(const Grid& o) :
 			m_x(o.m_x), m_y(o.m_y) {
+		m_array.clear();
 		for (FSszie i = 0; i < o.m_array.size(); ++i) {
-			m_array[i] = o.m_array[i];
+			m_array.push_back(o.m_array[i]);
 		}
 	}
 

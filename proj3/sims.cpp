@@ -13,7 +13,8 @@
 
 Simulation::Simulation(int argc, char** argv) :
 		m_argc(argc), m_argv(argv), m_delta_t(0), m_duration(0), m_x(320), m_y(
-				240), m_width(320), m_height(240), m_Magnify(false) {
+				240), m_width(320), m_height(240), m_Magnify(false), m_now_grid(
+				0) {
 	m_pixel_data = new MGLpixel[m_width * m_height];
 	m_mag_pixel_data = new MGLpixel[4 * m_width * 4 * m_height];
 }
@@ -94,17 +95,21 @@ void Simulation::InitGL() {
 }
 
 void Simulation::SetP(FSszie x, FSszie y, FSFloat p) {
-	m_grid.m_array[getPos(x, y)].m_p = p;
-	m_grid.m_array[getPos(x, y)].m_fixP = true;
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_p = p;
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixP = true;
 }
 
 void Simulation::SetU(FSszie x, FSszie y, const FSF2D &u) {
-	m_grid.m_array[getPos(x, y)].m_u = u;
-	m_grid.m_array[getPos(x, y)].m_fixU = true;
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_u = u;
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixU = true;
 }
 
 void Simulation::SetWall(FSszie x, FSszie y, bool set, bool rightHandSide) {
-
+	if (rightHandSide) {
+		m_grid[m_now_grid].m_array[getPos(x, y)].m_wall_right = set;
+	} else {
+		m_grid[m_now_grid].m_array[getPos(x, y)].m_wall_bottom = set;
+	}
 }
 
 void Show() {
@@ -112,15 +117,18 @@ void Show() {
 }
 
 void Simulation::ChangeDeltaT(FSFloat dt) {
-
+	m_delta_t = dt;
 }
 
 void Simulation::ChangeGrid(FSszie x, FSszie y) {
-
+	m_x = x;
+	m_y = y;
+	m_grid[0] = Grid(m_x, m_y);
+	m_grid[1] = Grid(m_x, m_y);
 }
 
 void Simulation::ChangeDuration(FSFloat t) {
-
+	m_duration = t;
 }
 
 void Simulation::SetMagnify() {

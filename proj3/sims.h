@@ -43,7 +43,8 @@ private:
 	bool m_Magnify;
 	MGLpixel* m_pixel_data;
 	MGLpixel* m_mag_pixel_data;
-	Grid m_grid;
+	int m_now_grid;
+	Grid m_grid[2];
 };
 
 #endif /* PROJ3_SIMS_H_ */
