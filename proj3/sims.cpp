@@ -65,17 +65,34 @@ void Simulation::Run() {
 	InitGL();
 	MGLpixel white = Make_Pixel(255, 255, 255);
 
-	int k = 0;
 	while (1) {
-		memset(m_pixel_data, 0, sizeof(MGLpixel) * m_width * m_height);
-		for (int i = 0; i < 200; ++i) {
-			m_pixel_data[getPos(k, i)] = white;
-		}
-		k = (k + 1) % 320;
-		Display();
+		Tick();
 	}
 
 }
+
+void Simulation::Tick() {
+	Advection();
+	Poisson();
+	GetNewU();
+	Show();
+}
+
+void Simulation::Advection() {
+	int _new_grid = 1 - m_now_grid;
+	for (FSszie i = 0; i < m_x; i++) {
+		for (FSszie j = 0; j < m_y; ++j) {
+			if (!m_grid[m_now_grid].m_array[getPos(i,j)].m_fixUPH){
+			m_grid[_new_grid].m_array[getPos(i,j)].m_uph = Interpolate
+			}
+		}
+	}
+}
+
+FSFloat Simulation::Interpolate(FSFloat x, FSFloat y){
+	return 0;
+}
+
 
 void Simulation::InitGL() {
 	glutInit(&m_argc, m_argv);
@@ -99,9 +116,14 @@ void Simulation::SetP(FSszie x, FSszie y, FSFloat p) {
 	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixP = true;
 }
 
-void Simulation::SetU(FSszie x, FSszie y, const FSF2D &u) {
-	m_grid[m_now_grid].m_array[getPos(x, y)].m_u = u;
-	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixU = true;
+void Simulation::SetUPH(FSszie x, FSszie y, FSFloat uph) {
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_uph = uph;
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixUPH = true;
+}
+
+void Simulation::SetVPH(FSszie x, FSszie y, FSFloat vph) {
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_vph = vph;
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixVPH = true;
 }
 
 void Simulation::SetWall(FSszie x, FSszie y, bool set, bool rightHandSide) {
@@ -110,10 +132,6 @@ void Simulation::SetWall(FSszie x, FSszie y, bool set, bool rightHandSide) {
 	} else {
 		m_grid[m_now_grid].m_array[getPos(x, y)].m_wall_bottom = set;
 	}
-}
-
-void Show() {
-
 }
 
 void Simulation::ChangeDeltaT(FSFloat dt) {
@@ -142,4 +160,3 @@ FSszie Simulation::getPos(FSszie x, FSszie y) {
 FSszie Simulation::getMegaPos(FSszie x, FSszie y) {
 	return y * 4 * m_width + x;
 }
-

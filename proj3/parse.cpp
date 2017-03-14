@@ -43,10 +43,16 @@ void Parse(Simulation& sims, const char* test_file) {
 		} else if (item == "cellp") {
 			FSszie x, y;
 			FSFloat p;
-			ss >> x >> y >> p ;
+			ss >> x >> y >> p;
 			assert(ss);
 			sims.SetP(x, y, p);
-		} else if (item == "cellu") {
+		} else if (item == "celluph") {
+			FSszie x, y;
+			FSFloat uph;
+			ss >> x >> y >> uph;
+			assert(ss);
+			sims.SetUPH(x, y, uph);
+		} else if (item == "cellvph") {
 			FSszie x, y;
 			FSFloat vx, vy;
 			ss >> x >> y >> vx >> vy;

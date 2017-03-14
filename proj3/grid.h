@@ -15,26 +15,24 @@
 using namespace Eigen;
 
 typedef double FSFloat;
-typedef Vector2d FSF2D;
 typedef u_int32_t FSszie;
 
 class Cell {
 public:
 	Cell() :
-			m_u(0, 0), m_p(1), m_wall_right(false), m_wall_bottom(false),m_fixP(false),m_fixU(false) {
-	}
-	Cell(FSF2D u, FSFloat p) :
-			m_u(u), m_p(1), m_wall_right(false), m_wall_bottom(false),m_fixP(false),m_fixU(false) {
+			m_uph(0), m_vph(0), m_p(1), m_wall_right(false), m_wall_bottom(
+					false), m_fixP(false), m_fixUPH(false),m_fixVPH(false) {
 	}
 	Cell(const Cell& o) :
-			m_u(o.m_u), m_p(o.m_p), m_wall_right(o.m_wall_right), m_wall_bottom(
-					o.m_wall_bottom),m_fixP(o.m_fixP),m_fixU(o.m_fixU) {
+			m_uph(o.m_uph), m_vph(o.m_vph), m_p(o.m_p), m_wall_right(
+					o.m_wall_right), m_wall_bottom(o.m_wall_bottom), m_fixP(
+					o.m_fixP), m_fixUPH(o.m_fixUPH), m_fixVPH(o.m_fixVPH) {
 	}
 
-	FSF2D m_u;
+	FSFloat m_uph, m_vph;
 	FSFloat m_p;
 	bool m_wall_right, m_wall_bottom;
-	bool m_fixP,m_fixU;
+	bool m_fixP, m_fixUPH, m_fixVPH;
 };
 
 class Grid {

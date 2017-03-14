@@ -20,17 +20,29 @@ class Simulation {
 public:
 	Simulation(int argc, char** argv);
 	~Simulation();
+
 	void Run();
-	void InitGL();
 	void SetP(FSszie x, FSszie y, FSFloat p);
-	void SetU(FSszie x, FSszie y, const FSF2D & u);
+	void SetUPH(FSszie x, FSszie y, FSFloat uph);
+	void SetVPH(FSszie x, FSszie y, FSFloat vph)
 	void SetWall(FSszie x, FSszie y, bool set, bool rightHandSide);
-	void Show(); //RunCallShow
 	void ChangeDeltaT(FSFloat dt);
 	void ChangeGrid(FSszie x, FSszie y);
 	void ChangeDuration(FSFloat t);
 	void SetMagnify();
+
+private:
+
+	void InitGL();
+	void Tick();
+	void Advection();
+	void Poisson();
+	void GetNewU();
+	void Show();
 	void Display();
+
+	FSFloat Interpolate(FSFloat x, FSFloat y);
+
 
 private:
 	FSszie getPos(FSszie x, FSszie y);
