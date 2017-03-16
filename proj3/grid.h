@@ -18,19 +18,19 @@ typedef uint32_t FSszie;
 class Cell {
 public:
 	Cell() :
-			m_uph(0), m_vph(0), m_p(1), m_wall_right(false), m_wall_bottom(
-					false), m_fixP(false), m_fixUPH(false), m_fixVPH(false) {
+			m_uph(0), m_vnh(0), m_p(1), m_wall_right(false), m_wall_bottom(
+					false), m_fixP(false), m_fixUPH(false), m_fixVNH(false) {
 	}
 	Cell(const Cell& o) :
-			m_uph(o.m_uph), m_vph(o.m_vph), m_p(o.m_p), m_wall_right(
+			m_uph(o.m_uph), m_vnh(o.m_vnh), m_p(o.m_p), m_wall_right(
 					o.m_wall_right), m_wall_bottom(o.m_wall_bottom), m_fixP(
-					o.m_fixP), m_fixUPH(o.m_fixUPH), m_fixVPH(o.m_fixVPH) {
+					o.m_fixP), m_fixUPH(o.m_fixUPH), m_fixVNH(o.m_fixVNH) {
 	}
 
-	FSFloat m_uph, m_vph; //u(i+1/2,j) , v(i,j+1/2)
+	FSFloat m_uph, m_vnh; //u(i+1/2,j) , v(i,j-1/2)
 	FSFloat m_p;
 	bool m_wall_right, m_wall_bottom;
-	bool m_fixP, m_fixUPH, m_fixVPH;
+	bool m_fixP, m_fixUPH, m_fixVNH;
 };
 
 class Grid {

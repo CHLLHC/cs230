@@ -13,12 +13,14 @@
 #include <cmath>
 #include <iostream>
 
+#define MULTIFICATION 30
+
 Simulation::Simulation(int argc, char** argv) :
 		m_argc(argc), m_argv(argv), m_delta_t(0.01), m_duration(0), m_x(320), m_y(
 				240), m_width(320), m_height(240), m_Magnify(false), m_now_grid(
 				0) {
 	m_pixel_data = new MGLpixel[m_width * m_height];
-	m_mag_pixel_data = new MGLpixel[4 * m_width * 4 * m_height];
+	m_mag_pixel_data = new MGLpixel[MULTIFICATION * m_width * MULTIFICATION * m_height];
 }
 
 Simulation::~Simulation() {
@@ -28,7 +30,7 @@ Simulation::~Simulation() {
 
 void Simulation::Display() {
 	if (m_Magnify) {
-		glViewport(0, 0, 4 * m_width, 4 * m_height);
+		glViewport(0, 0, MULTIFICATION * m_width, MULTIFICATION * m_height);
 	} else {
 		glViewport(0, 0, m_width, m_height);
 	}
@@ -45,13 +47,13 @@ void Simulation::Display() {
 	if (m_Magnify) {
 		for (FSszie j = 0; j < m_height; ++j)
 			for (FSszie i = 0; i < m_width; ++i) {
-				for (FSszie y = j * 4; y < (j + 1) * 4; ++y)
-					for (FSszie x = i * 4; x < (i + 1) * 4; ++x) {
+				for (FSszie y = j * MULTIFICATION; y < (j + 1) * MULTIFICATION; ++y)
+					for (FSszie x = i * MULTIFICATION; x < (i + 1) * MULTIFICATION; ++x) {
 						m_mag_pixel_data[getMegaPos(x, y)] =
-								m_pixel_data[getPos(i, j)];
+								m_pixel_data[getPixelPos(i, j)];
 					}
 			}
-		glDrawPixels(4 * m_width, 4 * m_height, GL_RGBA,
+		glDrawPixels(MULTIFICATION * m_width, MULTIFICATION * m_height, GL_RGBA,
 		GL_UNSIGNED_INT_8_8_8_8, (GLvoid*) m_mag_pixel_data);
 	} else {
 		glDrawPixels(m_width, m_height, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8,
@@ -64,10 +66,13 @@ void Simulation::Display() {
 }
 
 void Simulation::Run() {
+	std::cout << "InitGL();" << std::endl;
 	InitGL();
+	std::cout << "InitPoissonMatrix();" << std::endl;
 	InitPoissonMatrix();
 
 	bool a = false;
+	std::cout << "MainLoop" << std::endl;
 	while (1) {
 		if (a) {
 			std::cout << "===Tack" << std::endl;
@@ -115,14 +120,14 @@ void Simulation::Advection() {
 				Interpolate(px, py, up, vp);
 				m_grid[_new_grid].m_array[getPos(i, j)].m_uph = up;
 			}
-			if (!m_grid[m_now_grid].m_array[getPos(i, j)].m_fixVPH) {
+			if (!m_grid[m_now_grid].m_array[getPos(i, j)].m_fixVNH) {
 				FSFloat ug, vg;
 				Interpolate(i, j - 0.5, ug, vg);
 				FSFloat px = i - m_delta_t * ug;
 				FSFloat py = j - 0.5 - m_delta_t * vg;
 				FSFloat up, vp;
 				Interpolate(px, py, up, vp);
-				m_grid[_new_grid].m_array[getPos(i, j)].m_vph = vp;
+				m_grid[_new_grid].m_array[getPos(i, j)].m_vnh = vp;
 			}
 
 		}
@@ -131,12 +136,12 @@ void Simulation::Advection() {
 
 void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 
-	//For x
+	//For u
 	// 1|4
 	//--+--
 	// 2|3
 
-	FSszie x1, x2, x3, x4, y1, y2, y3, y4;
+	int32_t x1, x2, x3, x4, y1, y2, y3, y4;
 	x2 = floor(x - 0.5);
 	y2 = floor(y);
 
@@ -149,7 +154,7 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	y4 = y1;
 
 	//alpha for x, beta for y
-	FSFloat alpha = x - x2 + 0.5;
+	FSFloat alpha = x - (x2 + 0.5);
 	FSFloat beta = y - y2;
 
 	bool w1 = true, w2 = true, w3 = true, w4 = true;
@@ -192,14 +197,17 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 		u4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_uph * alpha * beta;
 		k++;
 	}
-	assert(k == 0);
+//	std::cout << k << "X" << x << "," << y << ";" << x1 << "," << y1 << ";"
+//			<< x2 << "," << y2 << ";" << x3 << "," << y3 << ";" << x4 << ","
+//			<< y4 << ";" << std::endl;
+	assert(k != 0);
 	FSFloat newu = (u1 + u2 + u3 + u4) / k;
 
-	//For y
+	//For v
 	// 1 4
 	// 2 3
 	x2 = floor(x);
-	y2 = floor(y - 0.5);
+	y2 = floor(y + 0.5);
 
 	x1 = x2;
 	x3 = x2 + 1;
@@ -211,7 +219,7 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 
 	//alpha for x, beta for y
 	alpha = x - x2;
-	beta = y - y2 + 0.5;
+	beta = y - (y2 - 0.5);
 
 	w1 = w2 = w3 = w4 = true;
 	//will only block by right wall of P2
@@ -234,25 +242,29 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	k = 0;
 	FSFloat v1 = 0, v2 = 0, v3 = 0, v4 = 0;
 	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y) && !w1) {
-		v1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_vph * (1 - alpha)
+		v1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_vnh * (1 - alpha)
 				* beta;
 		k++;
 	}
 	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y) && !w2) {
-		v2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_vph * (1 - alpha)
+		v2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_vnh * (1 - alpha)
 				* (1 - beta);
 		k++;
 	}
 	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y) && !w3) {
-		v3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_vph * alpha
+		v3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_vnh * alpha
 				* (1 - beta);
 		k++;
 	}
 	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y) && !w4) {
-		v4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_vph * alpha * beta;
+		v4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_vnh * alpha * beta;
 		k++;
 	}
-	assert(k == 0);
+//	std::cout << k << "Y" << x << "," << y << ";" << x1 << "," << y1 << ";"
+//			<< x2 << "," << y2 << ";" << x3 << "," << y3 << ";" << x4 << ","
+//			<< y4 << ";" << std::endl;
+
+	assert(k != 0);
 	FSFloat newv = (v1 + v2 + v3 + v4) / k;
 
 	u = newu;
@@ -278,12 +290,12 @@ void Simulation::Poisson() {
 			//   4   | y
 			// 1 p 3 | ^
 			//   2   | 0 >x
-			FSszie x1, x2, x3, x4, y1, y2, y3, y4;
+			int32_t x1, x2, x3, x4, y1, y2, y3, y4;
 			x1 = i - 1;
 			y1 = j;
 			x2 = i;
 			y2 = j - 1;
-			x3 = i + i;
+			x3 = i + 1;
 			y3 = j;
 			x4 = i;
 			y4 = j + 1;
@@ -302,7 +314,7 @@ void Simulation::Poisson() {
 				FSszie Pos2 = getPos(x2, y2);
 				//I dont need Pos2's u or v, just for p if it is fixed
 				if (!m_grid[m_now_grid].m_array[myPos].m_wall_bottom) {
-					b[myPos] += m_grid[_new_grid].m_array[myPos].m_vph;		//u*
+					b[myPos] += m_grid[_new_grid].m_array[myPos].m_vnh;		//u*
 					if (m_grid[m_now_grid].m_array[Pos2].m_fixP) {
 						b[myPos] -= m_grid[m_now_grid].m_array[Pos2].m_p;
 					}
@@ -321,7 +333,7 @@ void Simulation::Poisson() {
 			if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
 				FSszie Pos4 = getPos(x4, y4);
 				if (!m_grid[m_now_grid].m_array[Pos4].m_wall_bottom) {
-					b[myPos] -= m_grid[_new_grid].m_array[Pos4].m_vph;		//u*
+					b[myPos] -= m_grid[_new_grid].m_array[Pos4].m_vnh;		//u*
 					//subtract the pressure on the right side of equation if it is fixed
 					if (m_grid[m_now_grid].m_array[Pos4].m_fixP) {
 						b[myPos] -= m_grid[m_now_grid].m_array[Pos4].m_p;
@@ -362,12 +374,12 @@ void Simulation::UpdateU() {
 			}
 
 			//for v
-			if (!m_grid[m_now_grid].m_array[myPos].m_fixVPH) {
-				if (j + 1 < m_y) {
-					FSFloat nabla_pv = m_grid[m_now_grid].m_array[getPos(i,
-							j+1)].m_p - m_grid[m_now_grid].m_array[myPos].m_p;
-					m_grid[m_now_grid].m_array[myPos].m_vph =
-							m_grid[_new_grid].m_array[myPos].m_vph
+			if (!m_grid[m_now_grid].m_array[myPos].m_fixVNH) {
+				if (j >= 1) {
+					FSFloat nabla_pv = m_grid[m_now_grid].m_array[myPos].m_p
+							- m_grid[m_now_grid].m_array[getPos(i, j - 1)].m_p;
+					m_grid[m_now_grid].m_array[myPos].m_vnh =
+							m_grid[_new_grid].m_array[myPos].m_vnh
 									- nabla_pv * m_delta_t;
 				}
 			}
@@ -380,20 +392,25 @@ void Simulation::Show() {
 
 void Simulation::InitPoissonMatrix() {
 	FSszie total_size = m_x * m_y;
+//	std::cout<<"m_A.nonZeros():"<<m_A.nonZeros()<<std::endl;
 	m_A.resize(total_size, total_size);
+//	std::cout<<"m_A.nonZeros():"<<m_A.nonZeros()<<std::endl;
+	m_A.setZero();
+//	std::cout<<"m_A.nonZeros():"<<m_A.nonZeros()<<std::endl;
 	for (FSszie i = 0; i < m_x; i++)
 		for (FSszie j = 0; j < m_y; j++) {
 			FSszie myPos = getPos(i, j);
+//			std::cout<<"myPos: " <<i<<","<<j<<std::endl;
 			int k = 0;
 			//   4   | y
 			// 1 p 3 | ^
 			//   2   | 0 >x
-			FSszie x1, x2, x3, x4, y1, y2, y3, y4;
+			int32_t x1, x2, x3, x4, y1, y2, y3, y4;
 			x1 = i - 1;
 			y1 = j;
 			x2 = i;
 			y2 = j - 1;
-			x3 = i + i;
+			x3 = i + 1;
 			y3 = j;
 			x4 = i;
 			y4 = j + 1;
@@ -402,6 +419,7 @@ void Simulation::InitPoissonMatrix() {
 				FSszie Pos1 = getPos(x1, y1);
 				if (!m_grid[m_now_grid].m_array[Pos1].m_wall_right) {
 					if (!m_grid[m_now_grid].m_array[Pos1].m_fixP) {
+//						std::cout<<"m_A.insert(myPos, Pos1) = 1;"<<std::endl;
 						m_A.insert(myPos, Pos1) = 1;
 					}
 					k++;
@@ -411,6 +429,7 @@ void Simulation::InitPoissonMatrix() {
 				FSszie Pos2 = getPos(x2, y2);
 				if (!m_grid[m_now_grid].m_array[myPos].m_wall_bottom) {
 					if (!m_grid[m_now_grid].m_array[Pos2].m_fixP) {
+//						std::cout<<"m_A.insert(myPos, Pos2) = 1;"<<std::endl;
 						m_A.insert(myPos, Pos2) = 1;
 					}
 					k++;
@@ -420,6 +439,8 @@ void Simulation::InitPoissonMatrix() {
 				FSszie Pos3 = getPos(x3, y3);
 				if (!m_grid[m_now_grid].m_array[myPos].m_wall_right) {
 					if (!m_grid[m_now_grid].m_array[Pos3].m_fixP) {
+//						std::cout<<"m_A.insert(myPos, Pos3) = 1;"<<std::endl;
+//						std::cout<<"Pos3:"<<Pos3<<std::endl;
 						m_A.insert(myPos, Pos3) = 1;
 					}
 					k++;
@@ -429,11 +450,14 @@ void Simulation::InitPoissonMatrix() {
 				FSszie Pos4 = getPos(x4, y4);
 				if (!m_grid[m_now_grid].m_array[Pos4].m_wall_bottom) {
 					if (!m_grid[m_now_grid].m_array[Pos4].m_fixP) {
+//						std::cout<<"m_A.insert(myPos, Pos4) = 1;"<<std::endl;
+//						std::cout<<"Pos4:"<<Pos4<<","<<x4<<","<<y4<<std::endl;
 						m_A.insert(myPos, Pos4) = 1;
 					}
 					k++;
 				}
 			}
+//			std::cout<<"m_A.insert(myPos, myPos) = -k;"<<std::endl;
 			m_A.insert(myPos, myPos) = -k;
 		}
 
@@ -450,7 +474,7 @@ void Simulation::InitGL() {
 	glutInit(&m_argc, m_argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);
 	if (m_Magnify) {
-		glutInitWindowSize(4 * m_width, 4 * m_height);
+		glutInitWindowSize(MULTIFICATION * m_width, MULTIFICATION * m_height);
 	} else {
 		glutInitWindowSize(m_width, m_height);
 	}
@@ -473,9 +497,9 @@ void Simulation::SetUPH(FSszie x, FSszie y, FSFloat uph) {
 	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixUPH = true;
 }
 
-void Simulation::SetVPH(FSszie x, FSszie y, FSFloat vph) {
-	m_grid[m_now_grid].m_array[getPos(x, y)].m_vph = vph;
-	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixVPH = true;
+void Simulation::SetVNH(FSszie x, FSszie y, FSFloat vph) {
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_vnh = vph;
+	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixVNH = true;
 }
 
 void Simulation::SetWall(FSszie x, FSszie y, bool set, bool rightHandSide) {
@@ -493,6 +517,8 @@ void Simulation::ChangeDeltaT(FSFloat dt) {
 void Simulation::ChangeGrid(FSszie x, FSszie y) {
 	m_x = x;
 	m_y = y;
+	m_width = x;
+	m_height = y;
 	m_grid[0] = Grid(m_x, m_y);
 	m_grid[1] = Grid(m_x, m_y);
 }
@@ -506,9 +532,13 @@ void Simulation::SetMagnify() {
 }
 
 FSszie Simulation::getPos(FSszie x, FSszie y) {
+	return y * m_x + x;
+}
+
+FSszie Simulation::getPixelPos(FSszie x, FSszie y) {
 	return y * m_width + x;
 }
 
 FSszie Simulation::getMegaPos(FSszie x, FSszie y) {
-	return y * 4 * m_width + x;
+	return y * MULTIFICATION * m_width + x;
 }

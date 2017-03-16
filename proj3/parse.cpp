@@ -52,12 +52,12 @@ void Parse(Simulation& sims, const char* test_file) {
 			ss >> x >> y >> uph;
 			assert(ss);
 			sims.SetUPH(x, y, uph);
-		} else if (item == "cellvph") {
+		} else if (item == "cellvnh") {
 			FSszie x, y;
-			FSFloat vph;
-			ss >> x >> y >> vph;
+			FSFloat vnh;
+			ss >> x >> y >> vnh;
 			assert(ss);
-			sims.SetVPH(x, y, vph);
+			sims.SetVNH(x, y, vnh);
 		} else if (item == "wall") {
 			FSszie x, y;
 			int right;

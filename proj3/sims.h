@@ -35,7 +35,7 @@ public:
 	void Run();
 	void SetP(FSszie x, FSszie y, FSFloat p);
 	void SetUPH(FSszie x, FSszie y, FSFloat uph);
-	void SetVPH(FSszie x, FSszie y, FSFloat vph);
+	void SetVNH(FSszie x, FSszie y, FSFloat vnh);
 	void SetWall(FSszie x, FSszie y, bool set, bool rightHandSide);
 	void ChangeDeltaT(FSFloat dt);
 	void ChangeGrid(FSszie x, FSszie y);
@@ -57,6 +57,7 @@ private:
 
 private:
 	FSszie getPos(FSszie x, FSszie y);
+	FSszie getPixelPos(FSszie x, FSszie y);
 	FSszie getMegaPos(FSszie x, FSszie y);
 	int m_argc;
 	char** m_argv;
