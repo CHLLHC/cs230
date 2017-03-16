@@ -8,14 +8,12 @@
 #ifndef PROJ3_GRID_H_
 #define PROJ3_GRID_H_
 
-#include <Eigen/Sparse>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-using namespace Eigen;
 
 typedef double FSFloat;
-typedef u_int32_t FSszie;
+typedef uint32_t FSszie;
 
 class Cell {
 public:

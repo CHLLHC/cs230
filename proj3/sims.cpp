@@ -11,6 +11,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <cmath>
+#include <iostream>
 
 Simulation::Simulation(int argc, char** argv) :
 		m_argc(argc), m_argv(argv), m_delta_t(0), m_duration(0), m_x(320), m_y(
@@ -64,7 +65,7 @@ void Simulation::Display() {
 
 void Simulation::Run() {
 	InitGL();
-	MGLpixel white = Make_Pixel(255, 255, 255);
+	InitPoissonMatrix();
 
 	while (1) {
 		Tick();
@@ -75,7 +76,6 @@ void Simulation::Run() {
 void Simulation::Tick() {
 	Advection();
 	Poisson();
-	GetNewU();
 	Show();
 }
 
@@ -99,16 +99,23 @@ void Simulation::Advection() {
 //					L1 = m_grid[m_now_grid].m_array[getPos(i + 1, j)].m_vph;
 //				}
 //				FSFloat vUPH = (L1 + R1 + L2 + R2) / 4;
-				FSFloat ug,vg;
-				Interpolate(i+0.5,j,ug,vg);
-				FSFloat px = i+0.5 - m_delta_t * ug;
+				FSFloat ug, vg;
+				Interpolate(i + 0.5, j, ug, vg);
+				FSFloat px = i + 0.5 - m_delta_t * ug;
 				FSFloat py = j - m_delta_t * vg;
-				FSFloat up,vp;
-				Interpolate(px,py,up,vp);
+				FSFloat up, vp;
+				Interpolate(px, py, up, vp);
 				m_grid[_new_grid].m_array[getPos(i, j)].m_uph = up;
 			}
-			if ()
-
+			if (!m_grid[m_now_grid].m_array[getPos(i, j)].m_fixVPH) {
+				FSFloat ug, vg;
+				Interpolate(i, j - 0.5, ug, vg);
+				FSFloat px = i - m_delta_t * ug;
+				FSFloat py = j - 0.5 - m_delta_t * vg;
+				FSFloat up, vp;
+				Interpolate(px, py, up, vp);
+				m_grid[_new_grid].m_array[getPos(i, j)].m_vph = vp;
+			}
 
 		}
 	}
@@ -116,8 +123,9 @@ void Simulation::Advection() {
 
 void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	//For x
-	// 1 4
-	// 2 3
+	// 1|4
+	//--+--
+	// 2|3
 
 	FSszie x1, x2, x3, x4, y1, y2, y3, y4;
 	x2 = floor(x - 0.5);
@@ -203,6 +211,87 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 
 	u = newu;
 	v = newv;
+}
+
+void Simulation::Poisson() {
+	//solve poisson
+	//solve Ap=b
+	Eigen::VectorXd p, b;
+
+	//fill b
+	p = m_solver.solve(b);
+}
+
+void Simulation::Show() {
+
+}
+
+void Simulation::InitPoissonMatrix() {
+	FSszie total_size = m_x * m_y;
+	m_A.resize(total_size, total_size);
+	for (FSszie i = 0; i < m_x; i++)
+		for (FSszie j = 0; j < m_y; j++) {
+			FSszie myPos = getPos(i, j);
+			int k = 0;
+			//   4   | y
+			// 1 p 3 | ^
+			//   2   | 0 >x
+			FSszie x1, x2, x3, x4, y1, y2, y3, y4;
+			x1 = i - 1;
+			y1 = j;
+			x2 = i;
+			y2 = j - 1;
+			x3 = i + i;
+			y3 = j;
+			x4 = i;
+			y4 = j + 1;
+
+			if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y)) {
+				FSszie Pos1 = getPos(x1, y1);
+				if (!m_grid[m_now_grid].m_array[Pos1].m_wall_right) {
+					if (!m_grid[m_now_grid].m_array[Pos1].m_fixP) {
+						m_A.insert(myPos, Pos1) = 1;
+					}
+					k++;
+				}
+			}
+			if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+				FSszie Pos2 = getPos(x2, y2);
+				if (!m_grid[m_now_grid].m_array[myPos].m_wall_bottom) {
+					if (!m_grid[m_now_grid].m_array[Pos2].m_fixP) {
+						m_A.insert(myPos, Pos2) = 1;
+					}
+					k++;
+				}
+			}
+			if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y)) {
+				FSszie Pos3 = getPos(x3, y3);
+				if (!m_grid[m_now_grid].m_array[myPos].m_wall_right) {
+					if (!m_grid[m_now_grid].m_array[Pos3].m_fixP) {
+						m_A.insert(myPos, Pos3) = 1;
+					}
+					k++;
+				}
+			}
+			if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+				FSszie Pos4 = getPos(x4, y4);
+				if (!m_grid[m_now_grid].m_array[Pos4].m_wall_bottom) {
+					if (!m_grid[m_now_grid].m_array[Pos4].m_fixP) {
+						m_A.insert(myPos, Pos4) = 1;
+					}
+					k++;
+				}
+			}
+			m_A.insert(myPos, myPos) = -k;
+		}
+
+	m_solver.compute(m_A);
+	if (m_solver.info() != Eigen::Success) {
+		// decomposition failed
+		std::cout << "decomposition failed" << std::endl;
+		assert(false);
+	}
+
 }
 
 void Simulation::InitGL() {

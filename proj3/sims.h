@@ -10,6 +10,8 @@
 
 #include "grid.h"
 
+#include <Eigen/SparseCholesky>
+
 typedef unsigned int MGLpixel;
 
 inline MGLpixel Make_Pixel(int r, int g, int b) {
@@ -24,7 +26,7 @@ public:
 	void Run();
 	void SetP(FSszie x, FSszie y, FSFloat p);
 	void SetUPH(FSszie x, FSszie y, FSFloat uph);
-	void SetVPH(FSszie x, FSszie y, FSFloat vph)
+	void SetVPH(FSszie x, FSszie y, FSFloat vph);
 	void SetWall(FSszie x, FSszie y, bool set, bool rightHandSide);
 	void ChangeDeltaT(FSFloat dt);
 	void ChangeGrid(FSszie x, FSszie y);
@@ -34,10 +36,10 @@ public:
 private:
 
 	void InitGL();
+	void InitPoissonMatrix();
 	void Tick();
 	void Advection();
 	void Poisson();
-	void GetNewU();
 	void Show();
 	void Display();
 
@@ -56,6 +58,8 @@ private:
 	MGLpixel* m_mag_pixel_data;
 	int m_now_grid;
 	Grid m_grid[2];
+	Eigen::SparseMatrix<FSFloat> m_A;
+	Eigen::SimplicialLDLT<Eigen::SparseMatrix<FSFloat> > m_solver;
 };
 
 #endif /* PROJ3_SIMS_H_ */

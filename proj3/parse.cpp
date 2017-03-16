@@ -54,11 +54,10 @@ void Parse(Simulation& sims, const char* test_file) {
 			sims.SetUPH(x, y, uph);
 		} else if (item == "cellvph") {
 			FSszie x, y;
-			FSFloat vx, vy;
-			ss >> x >> y >> vx >> vy;
+			FSFloat vph;
+			ss >> x >> y >> vph;
 			assert(ss);
-			FSF2D u(vx, vy);
-			sims.SetU(x, y, u);
+			sims.SetVPH(x, y, vph);
 		} else if (item == "wall") {
 			FSszie x, y;
 			int right;
