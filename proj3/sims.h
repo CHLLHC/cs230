@@ -51,6 +51,7 @@ private:
 	void Poisson();
 	void UpdateU();
 	void Show();
+	void ShowDebugGrid();
 	void Display();
 
 	void Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v);
