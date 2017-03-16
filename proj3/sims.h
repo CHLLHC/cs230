@@ -11,8 +11,17 @@
 #include "grid.h"
 
 #include <Eigen/SparseCholesky>
+#include <deque>
 
 typedef unsigned int MGLpixel;
+class Partical {
+public:
+	Partical(FSFloat x, FSFloat y) :
+			x(x), y(y) {
+
+	}
+	FSFloat x, y;
+};
 
 inline MGLpixel Make_Pixel(int r, int g, int b) {
 	return (r << 24) | (g << 16) | (b << 8) | 0xff;
@@ -40,6 +49,7 @@ private:
 	void Tick();
 	void Advection();
 	void Poisson();
+	void UpdateU();
 	void Show();
 	void Display();
 
@@ -60,6 +70,7 @@ private:
 	Grid m_grid[2];
 	Eigen::SparseMatrix<FSFloat> m_A;
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<FSFloat> > m_solver;
+	std::deque<Partical> m_parts;
 };
 
 #endif /* PROJ3_SIMS_H_ */

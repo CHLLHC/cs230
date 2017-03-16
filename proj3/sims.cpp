@@ -14,7 +14,7 @@
 #include <iostream>
 
 Simulation::Simulation(int argc, char** argv) :
-		m_argc(argc), m_argv(argv), m_delta_t(0), m_duration(0), m_x(320), m_y(
+		m_argc(argc), m_argv(argv), m_delta_t(0.01), m_duration(0), m_x(320), m_y(
 				240), m_width(320), m_height(240), m_Magnify(false), m_now_grid(
 				0) {
 	m_pixel_data = new MGLpixel[m_width * m_height];
@@ -67,7 +67,14 @@ void Simulation::Run() {
 	InitGL();
 	InitPoissonMatrix();
 
+	bool a = false;
 	while (1) {
+		if (a) {
+			std::cout << "===Tack" << std::endl;
+		} else {
+			std::cout << "Tick===" << std::endl;
+		}
+		a = !a;
 		Tick();
 	}
 
@@ -76,6 +83,7 @@ void Simulation::Run() {
 void Simulation::Tick() {
 	Advection();
 	Poisson();
+	UpdateU();
 	Show();
 }
 
@@ -122,6 +130,7 @@ void Simulation::Advection() {
 }
 
 void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
+
 	//For x
 	// 1|4
 	//--+--
@@ -143,24 +152,43 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	FSFloat alpha = x - x2 + 0.5;
 	FSFloat beta = y - y2;
 
+	bool w1 = true, w2 = true, w3 = true, w4 = true;
+	//will only block by bottom wall of P4
+
+	if (beta < 0.5) {
+		w2 = w3 = false;
+		if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+			if (!m_grid[m_now_grid].m_array[getPos(x4, y4)].m_wall_bottom) {
+				w1 = w4 = false;
+			}
+		}
+	} else {
+		w1 = w4 = false;
+		if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+			if (!m_grid[m_now_grid].m_array[getPos(x4, y4)].m_wall_bottom) {
+				w2 = w3 = false;
+			}
+		}
+	}
+
 	int k = 0;
 	FSFloat u1 = 0, u2 = 0, u3 = 0, u4 = 0;
-	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y)) {
+	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y) && !w1) {
 		u1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_uph * (1 - alpha)
 				* beta;
 		k++;
 	}
-	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y) && !w2) {
 		u2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_uph * (1 - alpha)
 				* (1 - beta);
 		k++;
 	}
-	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y)) {
+	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y) && !w3) {
 		u3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_uph * alpha
 				* (1 - beta);
 		k++;
 	}
-	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y) && !w4) {
 		u4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_uph * alpha * beta;
 		k++;
 	}
@@ -185,24 +213,42 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	alpha = x - x2;
 	beta = y - y2 + 0.5;
 
+	w1 = w2 = w3 = w4 = true;
+	//will only block by right wall of P2
+	if (alpha < 0.5) {
+		w1 = w2 = false;
+		if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+			if (!m_grid[m_now_grid].m_array[getPos(x2, y2)].m_wall_right) {
+				w3 = w4 = false;
+			}
+		}
+	} else {
+		w3 = w4 = false;
+		if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+			if (!m_grid[m_now_grid].m_array[getPos(x2, y2)].m_wall_right) {
+				w1 = w2 = false;
+			}
+		}
+	}
+
 	k = 0;
 	FSFloat v1 = 0, v2 = 0, v3 = 0, v4 = 0;
-	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y)) {
+	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y) && !w1) {
 		v1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_vph * (1 - alpha)
 				* beta;
 		k++;
 	}
-	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y) && !w2) {
 		v2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_vph * (1 - alpha)
 				* (1 - beta);
 		k++;
 	}
-	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y)) {
+	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y) && !w3) {
 		v3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_vph * alpha
 				* (1 - beta);
 		k++;
 	}
-	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y) && !w4) {
 		v4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_vph * alpha * beta;
 		k++;
 	}
@@ -214,12 +260,118 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 }
 
 void Simulation::Poisson() {
-	//solve poisson
+	//use u* to solve poisson
 	//solve Ap=b
 	Eigen::VectorXd p, b;
+	FSszie total_size = m_x * m_y;
+	b.resize(total_size);
 
-	//fill b
+	int _new_grid = 1 - m_now_grid;
+
+	for (FSszie i = 0; i < m_x; i++)
+		for (FSszie j = 0; j < m_y; j++) {
+			FSszie myPos = getPos(i, j);
+			b[myPos] = 0;
+			if (m_grid[m_now_grid].m_array[myPos].m_fixP) {
+				continue; //Dont want to push the rest 4 spaces away anymore.
+			}
+			//   4   | y
+			// 1 p 3 | ^
+			//   2   | 0 >x
+			FSszie x1, x2, x3, x4, y1, y2, y3, y4;
+			x1 = i - 1;
+			y1 = j;
+			x2 = i;
+			y2 = j - 1;
+			x3 = i + i;
+			y3 = j;
+			x4 = i;
+			y4 = j + 1;
+
+			if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y)) {
+				FSszie Pos1 = getPos(x1, y1);
+				if (!m_grid[m_now_grid].m_array[Pos1].m_wall_right) {
+					b[myPos] -= m_grid[_new_grid].m_array[Pos1].m_uph;		//u*
+					//subtract the pressure on the right side of equation if it is fixed
+					if (m_grid[m_now_grid].m_array[Pos1].m_fixP) {
+						b[myPos] -= m_grid[m_now_grid].m_array[Pos1].m_p;
+					}
+				}
+			}
+			if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y)) {
+				FSszie Pos2 = getPos(x2, y2);
+				//I dont need Pos2's u or v, just for p if it is fixed
+				if (!m_grid[m_now_grid].m_array[myPos].m_wall_bottom) {
+					b[myPos] += m_grid[_new_grid].m_array[myPos].m_vph;		//u*
+					if (m_grid[m_now_grid].m_array[Pos2].m_fixP) {
+						b[myPos] -= m_grid[m_now_grid].m_array[Pos2].m_p;
+					}
+				}
+			}
+			if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y)) {
+				FSszie Pos3 = getPos(x3, y3);
+				//I dont need Pos3's u or v, just for p if it is fixed
+				if (!m_grid[m_now_grid].m_array[myPos].m_wall_right) {
+					b[myPos] += m_grid[_new_grid].m_array[myPos].m_uph;		//u*
+					if (m_grid[m_now_grid].m_array[Pos3].m_fixP) {
+						b[myPos] -= m_grid[m_now_grid].m_array[Pos3].m_p;
+					}
+				}
+			}
+			if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y)) {
+				FSszie Pos4 = getPos(x4, y4);
+				if (!m_grid[m_now_grid].m_array[Pos4].m_wall_bottom) {
+					b[myPos] -= m_grid[_new_grid].m_array[Pos4].m_vph;		//u*
+					//subtract the pressure on the right side of equation if it is fixed
+					if (m_grid[m_now_grid].m_array[Pos4].m_fixP) {
+						b[myPos] -= m_grid[m_now_grid].m_array[Pos4].m_p;
+					}
+				}
+			}
+		}
+
+	//devided by delta_t
+	b = b / m_delta_t;
+
 	p = m_solver.solve(b);
+	for (FSszie i = 0; i < m_x; i++)
+		for (FSszie j = 0; j < m_y; j++) {
+			FSszie myPos = getPos(i, j);
+			if (!m_grid[m_now_grid].m_array[myPos].m_fixP) {
+				m_grid[m_now_grid].m_array[myPos].m_p = p[myPos];
+			}
+		}
+}
+
+void Simulation::UpdateU() {
+	int _new_grid = 1 - m_now_grid;
+
+	for (FSszie i = 0; i < m_x; i++)
+		for (FSszie j = 0; j < m_y; j++) {
+			FSszie myPos = getPos(i, j);
+			//for u
+			//if there is a wall the m_fixUPH must be true, so no need to check it
+			if (!m_grid[m_now_grid].m_array[myPos].m_fixUPH) {
+				if (i + 1 < m_x) {
+					FSFloat nabla_pu = m_grid[m_now_grid].m_array[getPos(i + 1,
+							j)].m_p - m_grid[m_now_grid].m_array[myPos].m_p;
+					m_grid[m_now_grid].m_array[myPos].m_uph =
+							m_grid[_new_grid].m_array[myPos].m_uph
+									- nabla_pu * m_delta_t;
+				}
+			}
+
+			//for v
+			if (!m_grid[m_now_grid].m_array[myPos].m_fixVPH) {
+				if (j + 1 < m_y) {
+					FSFloat nabla_pv = m_grid[m_now_grid].m_array[getPos(i,
+							j+1)].m_p - m_grid[m_now_grid].m_array[myPos].m_p;
+					m_grid[m_now_grid].m_array[myPos].m_vph =
+							m_grid[_new_grid].m_array[myPos].m_vph
+									- nabla_pv * m_delta_t;
+				}
+			}
+		}
 }
 
 void Simulation::Show() {
