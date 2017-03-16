@@ -39,8 +39,11 @@ public:
 	void SetWall(FSszie x, FSszie y, bool set, bool rightHandSide);
 	void ChangeDeltaT(FSFloat dt);
 	void ChangeGrid(FSszie x, FSszie y);
-	void ChangeDuration(FSFloat t);
+	void ChangeMagnitude(FSszie m);
+	void ChangeWindowMagnitude(FSszie wm);
+	void ChangeNewPartsInterval(FSFloat pitv);
 	void SetMagnify();
+	void SetDebugFlag();
 
 private:
 
@@ -66,6 +69,8 @@ private:
 	FSszie m_x, m_y;
 	FSszie m_width, m_height;
 	bool m_Magnify;
+	FSszie m_Magnitude;
+	FSszie m_WindowsMag;
 	MGLpixel* m_pixel_data;
 	MGLpixel* m_mag_pixel_data;
 	int m_now_grid;
@@ -73,6 +78,8 @@ private:
 	Eigen::SparseMatrix<FSFloat> m_A;
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<FSFloat> > m_solver;
 	std::deque<Partical> m_parts;
+	bool m_debug;
+	FSFloat m_pitv, m_lastshow;
 };
 
 #endif /* PROJ3_SIMS_H_ */

@@ -30,11 +30,16 @@ void Parse(Simulation& sims, const char* test_file) {
 			ss >> w >> h;
 			assert(ss);
 			sims.ChangeGrid(w, h);
-		} else if (item == "duration") {
-			FSFloat t;
-			ss >> t;
+		} else if (item == "mag") {
+			FSFloat m;
+			ss >> m;
 			assert(ss);
-			sims.ChangeDuration(t);
+			sims.ChangeMagnitude(m);
+		} else if (item == "wmag") {
+			FSFloat wm;
+			ss >> wm;
+			assert(ss);
+			sims.ChangeWindowMagnitude(wm);
 		} else if (item == "delta") {
 			FSFloat dt;
 			ss >> dt;
@@ -58,6 +63,11 @@ void Parse(Simulation& sims, const char* test_file) {
 			ss >> x >> y >> vnh;
 			assert(ss);
 			sims.SetVNH(x, y, vnh);
+		} else if (item == "pitv") {
+			FSFloat pitv;
+			ss >> pitv;
+			assert(ss);
+			sims.ChangeNewPartsInterval(pitv);
 		} else if (item == "wall") {
 			FSszie x, y;
 			int right;

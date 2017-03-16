@@ -1,4 +1,7 @@
 size 3 3
+mag 16
+wmag 20
 delta 0.1
+pitv 10
 cellp 0 0 0.1
-cellp 2 2 1
+cellp 2 2 10

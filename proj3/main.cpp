@@ -20,10 +20,10 @@ void Parse(Simulation& sims, const char* test_file);
 int main(int argc, char** argv) {
 
 	const char* input_file = 0;
-	bool zoom = false;
+	bool zoom = false, debug = false;
 
 	while (1) {
-		int opt = getopt(argc, argv, "i:m");
+		int opt = getopt(argc, argv, "i:md");
 		if (opt == -1)
 			break;
 		switch (opt) {
@@ -33,6 +33,9 @@ int main(int argc, char** argv) {
 		case 'm':
 			zoom = true;
 			break;
+		case 'd':
+			debug = true;
+			break;
 		}
 	}
 	if (!input_file)
@@ -41,6 +44,9 @@ int main(int argc, char** argv) {
 	Simulation sims(argc, argv);
 	if (zoom){
 		sims.SetMagnify();
+	}
+	if (debug){
+		sims.SetDebugFlag();
 	}
 
 	Parse(sims, input_file);
