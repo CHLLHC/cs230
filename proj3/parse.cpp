@@ -68,6 +68,11 @@ void Parse(Simulation& sims, const char* test_file) {
 			ss >> pitv;
 			assert(ss);
 			sims.ChangeNewPartsInterval(pitv);
+		} else if (item == "pps") {
+			FSszie pps;
+			ss >> pps;
+			assert(ss);
+			sims.ChangePartsPerShow(pps);
 		} else if (item == "wall") {
 			FSszie x, y;
 			int right;

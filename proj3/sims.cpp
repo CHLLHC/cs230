@@ -17,8 +17,11 @@ Simulation::Simulation(int argc, char** argv) :
 		m_argc(argc), m_argv(argv), m_delta_t(0.01), m_duration(0), m_x(320), m_y(
 				240), m_width(320), m_height(240), m_Magnify(false), m_Magnitude(
 				10), m_WindowsMag(1), m_now_grid(0), m_debug(false), m_pitv(
-				0.1), m_lastshow(0) {
+				0.1), m_lastshow(0), m_pps(2) {
+	m_background = new MGLpixel[m_width * m_height];
 	m_pixel_data = new MGLpixel[m_width * m_height];
+	m_mag_background = new MGLpixel[m_Magnitude * m_width * m_Magnitude
+			* m_height];
 	m_mag_pixel_data = new MGLpixel[m_Magnitude * m_width * m_Magnitude
 			* m_height];
 }
@@ -64,6 +67,8 @@ void Simulation::Run() {
 	InitGL();
 	std::cout << "InitPoissonMatrix();" << std::endl;
 	InitPoissonMatrix();
+	std::cout << "InitBackground();" << std::endl;
+	InitBackground();
 
 	bool a = false;
 	std::cout << "MainLoop" << std::endl;
@@ -429,17 +434,19 @@ void Simulation::UpdateU() {
 }
 
 void Simulation::Show() {
+	//Reset
 	for (FSszie i = 0; i < m_width; ++i) {
 		for (FSszie j = 0; j < m_height; ++j) {
 			if (m_Magnify) {
 				for (FSszie y = j * m_Magnitude; y < (j + 1) * m_Magnitude; ++y)
 					for (FSszie x = i * m_Magnitude; x < (i + 1) * m_Magnitude;
 							++x) {
-						m_mag_pixel_data[getMegaPos(x, y)] = Make_Pixel(0, 51,
-								102);
+						m_mag_pixel_data[getMegaPos(x, y)] =
+								m_mag_background[getMegaPos(x, y)];
 					}
 			} else {
-				m_pixel_data[getPixelPos(i, j)] = Make_Pixel(0, 51, 102);
+				m_pixel_data[getPixelPos(i, j)] =
+						m_background[getPixelPos(i, j)];
 			}
 		}
 	}
@@ -454,6 +461,10 @@ void Simulation::Show() {
 		m_parts.pop_front();
 
 		if (m_Magnify) {
+			if (m_debug) {
+				std::cout << "NewMegDot: " << round((x + 0.5) * m_Magnitude)
+						<< "," << round((y + 0.5) * m_Magnitude);
+			}
 			m_mag_pixel_data[getMegaPos(round((x + 0.5) * m_Magnitude),
 					round((y + 0.5) * m_Magnitude))] = Make_Pixel(255, 255,
 					255);
@@ -469,17 +480,19 @@ void Simulation::Show() {
 			std::cout << "UV: " << u << "," << v << ";";
 			std::cout << "New: " << x << "," << y << ";" << std::endl;
 		}
-		if ((x > 0) && (y > 0) && (x < m_width - 0.5) && (y < m_height - 0.5)) {
-			m_parts.push_back(Partical(x, y));
+		if ((x > -0.5) && (y > -0.5) && (x < m_width - 0.5)
+				&& (y < m_height - 0.5)) {
+			if ((x > 0) || (y > 0)) {
+				m_parts.push_back(Partical(x, y));
+			}
 		}
 	}
 
 	if ((q_size == 0) || (!m_debug)) {
 		if (m_lastshow < 1e-8) {
-			int n = 2;
-			FSFloat oneovernp1 = 1.0 / (n + 1);
-			for (int i = 1; i <= n; ++i) {
-				for (int j = 1; j <= n; ++j) {
+			FSFloat oneovernp1 = 1.0 / (m_pps + 1);
+			for (FSszie i = 1; i <= m_pps; ++i) {
+				for (FSszie j = 1; j <= m_pps; ++j) {
 					m_parts.push_back(
 							Partical(m_width - 1.5 + i * oneovernp1,
 									m_height - 1.5 + j * oneovernp1));
@@ -604,6 +617,61 @@ void Simulation::InitGL() {
 	glDrawBuffer(GL_FRONT);
 }
 
+void Simulation::InitBackground() {
+	for (FSszie i = 0; i < m_x; ++i) {
+		for (FSszie j = 0; j < m_y; ++j) {
+			if (!m_Magnify) {
+				FSszie myPos = getPos(i, j);
+				m_background[getPixelPos(i, j)] = Make_Pixel(0, 51, 102);
+				Cell & cell = m_grid[m_now_grid].m_array[myPos];
+				if (cell.m_fixP) {
+					m_background[myPos] = Make_Pixel(14, 47, 68);
+				}
+				if (cell.m_wall_bottom || cell.m_wall_right) {
+					m_background[myPos] = Make_Pixel(225, 79, 0);
+				}
+			} else {
+				for (FSszie y = j * m_Magnitude; y < (j + 1) * m_Magnitude; ++y)
+					for (FSszie x = i * m_Magnitude; x < (i + 1) * m_Magnitude;
+							++x) {
+						m_mag_background[getMegaPos(x, y)] = Make_Pixel(0, 51,
+								102);
+					}
+
+				FSszie myPos = getPos(i, j);
+				Cell & cell = m_grid[m_now_grid].m_array[myPos];
+				if (cell.m_fixP) {
+					for (FSszie y = j * m_Magnitude; y < (j + 1) * m_Magnitude;
+							++y)
+						for (FSszie x = i * m_Magnitude;
+								x < (i + 1) * m_Magnitude; ++x) {
+							m_mag_background[getMegaPos(x, y)] = Make_Pixel(14,
+									47, 68);
+						}
+				}
+				if (cell.m_wall_right) {
+					FSszie x = (i + 1) * m_Magnitude - 1;
+					for (FSszie y = j * m_Magnitude; y < (j + 1) * m_Magnitude;
+							++y) {
+						m_mag_background[getMegaPos(x, y)] = Make_Pixel(225, 79,
+								0);
+					}
+				}
+				if (cell.m_wall_bottom) {
+					FSszie y = j * m_Magnitude;
+					for (FSszie x = i * m_Magnitude; x < (i + 1) * m_Magnitude;
+							++x) {
+						m_mag_background[getMegaPos(x, y)] = Make_Pixel(225, 79,
+								0);
+					}
+				}
+			}
+
+		}
+	}
+
+}
+
 void Simulation::SetP(FSszie x, FSszie y, FSFloat p) {
 	m_grid[m_now_grid].m_array[getPos(x, y)].m_p = p;
 	m_grid[m_now_grid].m_array[getPos(x, y)].m_fixP = true;
@@ -622,8 +690,12 @@ void Simulation::SetVNH(FSszie x, FSszie y, FSFloat vph) {
 void Simulation::SetWall(FSszie x, FSszie y, bool set, bool rightHandSide) {
 	if (rightHandSide) {
 		m_grid[m_now_grid].m_array[getPos(x, y)].m_wall_right = set;
+		m_grid[m_now_grid].m_array[getPos(x, y)].m_uph = 0;
+		m_grid[m_now_grid].m_array[getPos(x, y)].m_fixUPH = true;
 	} else {
 		m_grid[m_now_grid].m_array[getPos(x, y)].m_wall_bottom = set;
+		m_grid[m_now_grid].m_array[getPos(x, y)].m_vnh = 0;
+		m_grid[m_now_grid].m_array[getPos(x, y)].m_fixVNH = true;
 	}
 }
 
@@ -654,6 +726,10 @@ void Simulation::ChangeWindowMagnitude(FSszie wm) {
 
 void Simulation::ChangeNewPartsInterval(FSFloat pitv) {
 	m_pitv = pitv;
+}
+
+void Simulation::ChangePartsPerShow(FSszie pps) {
+	m_pps = pps;
 }
 
 void Simulation::SetDebugFlag() {

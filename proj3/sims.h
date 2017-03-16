@@ -16,7 +16,7 @@
 typedef unsigned int MGLpixel;
 class Partical {
 public:
-	Partical(FSFloat x, FSFloat y) :
+	Partical(FSFloat x, FSFloat y, MGLpixel c) :
 			x(x), y(y) {
 
 	}
@@ -42,6 +42,7 @@ public:
 	void ChangeMagnitude(FSszie m);
 	void ChangeWindowMagnitude(FSszie wm);
 	void ChangeNewPartsInterval(FSFloat pitv);
+	void ChangePartsPerShow(FSszie pps);
 	void SetMagnify();
 	void SetDebugFlag();
 
@@ -49,6 +50,7 @@ private:
 
 	void InitGL();
 	void InitPoissonMatrix();
+	void InitBackground();
 	void Tick();
 	void Advection();
 	void Poisson();
@@ -71,7 +73,9 @@ private:
 	bool m_Magnify;
 	FSszie m_Magnitude;
 	FSszie m_WindowsMag;
+	MGLpixel* m_background;
 	MGLpixel* m_pixel_data;
+	MGLpixel* m_mag_background;
 	MGLpixel* m_mag_pixel_data;
 	int m_now_grid;
 	Grid m_grid[2];
@@ -80,6 +84,7 @@ private:
 	std::deque<Partical> m_parts;
 	bool m_debug;
 	FSFloat m_pitv, m_lastshow;
+	FSszie m_pps;
 };
 
 #endif /* PROJ3_SIMS_H_ */
