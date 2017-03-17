@@ -73,6 +73,11 @@ void Parse(Simulation& sims, const char* test_file) {
 			ss >> pps;
 			assert(ss);
 			sims.ChangePartsPerShow(pps);
+		} else if (item == "sp") {
+			FSszie x, y;
+			ss >> x >> y;
+			assert(ss);
+			sims.SetShowPoint(x, y);
 		} else if (item == "wall") {
 			FSszie x, y;
 			int right;

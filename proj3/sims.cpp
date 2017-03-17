@@ -17,7 +17,7 @@ Simulation::Simulation(int argc, char** argv) :
 		m_argc(argc), m_argv(argv), m_delta_t(0.01), m_duration(0), m_x(320), m_y(
 				240), m_width(320), m_height(240), m_Magnify(false), m_Magnitude(
 				10), m_WindowsMag(1), m_now_grid(0), m_debug(false), m_pitv(
-				0.1), m_lastshow(0), m_pps(2) {
+				0.1), m_lastshow(0), m_pps(2), m_colorRatio(1), m_colorMul(0.95) {
 	m_background = new MGLpixel[m_width * m_height];
 	m_pixel_data = new MGLpixel[m_width * m_height];
 	m_mag_background = new MGLpixel[m_Magnitude * m_width * m_Magnitude
@@ -193,6 +193,10 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	FSFloat alpha = x - (x2 + 0.5);
 	FSFloat beta = y - y2;
 
+	if (m_debug) {
+		std::cout << " Ua:" << alpha << ",b:" << beta;
+	}
+
 	bool w1 = true, w2 = true, w3 = true, w4 = true;
 	//will only block by bottom wall of P4
 
@@ -212,33 +216,33 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 		}
 	}
 
-	int k = 0;
+	FSFloat k = 0;
 	FSFloat u1 = 0, u2 = 0, u3 = 0, u4 = 0;
 	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y) && !w1) {
 		u1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_uph * (1 - alpha)
 				* beta;
-		k++;
+		k += (1 - alpha) * beta;
 	}
 	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y) && !w2) {
 		u2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_uph * (1 - alpha)
 				* (1 - beta);
-		k++;
+		k += (1 - alpha) * (1 - beta);
 	}
 	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y) && !w3) {
 		u3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_uph * alpha
 				* (1 - beta);
-		k++;
+		k += alpha * (1 - beta);
 	}
 	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y) && !w4) {
 		u4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_uph * alpha * beta;
-		k++;
+		k += alpha * beta;
 	}
 //	std::cout << k << "X" << x << "," << y << ";" << x1 << "," << y1 << ";"
 //			<< x2 << "," << y2 << ";" << x3 << "," << y3 << ";" << x4 << ","
 //			<< y4 << ";" << std::endl;
 	FSFloat newu = 0;
-	if (k != 0) {
-		newu = (u1 + u2 + u3 + u4) / k;
+	if (k > 1e-8) {
+		newu = (u1 + u2 + u3 + u4) ;
 	}
 
 	//For v
@@ -258,6 +262,10 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	//alpha for x, beta for y
 	alpha = x - x2;
 	beta = y - (y2 - 0.5);
+
+	if (m_debug) {
+		std::cout << " Va:" << alpha << ",b:" << beta << std::flush;
+	}
 
 	w1 = w2 = w3 = w4 = true;
 	//will only block by right wall of P2
@@ -282,29 +290,29 @@ void Simulation::Interpolate(FSFloat x, FSFloat y, FSFloat& u, FSFloat& v) {
 	if ((x1 >= 0) && (y1 >= 0) && (x1 < m_x) && (y1 < m_y) && !w1) {
 		v1 = m_grid[m_now_grid].m_array[getPos(x1, y1)].m_vnh * (1 - alpha)
 				* beta;
-		k++;
+		k += (1 - alpha) * beta;
 	}
 	if ((x2 >= 0) && (y2 >= 0) && (x2 < m_x) && (y2 < m_y) && !w2) {
 		v2 = m_grid[m_now_grid].m_array[getPos(x2, y2)].m_vnh * (1 - alpha)
 				* (1 - beta);
-		k++;
+		k += (1 - alpha) * (1 - beta);
 	}
 	if ((x3 >= 0) && (y3 >= 0) && (x3 < m_x) && (y3 < m_y) && !w3) {
 		v3 = m_grid[m_now_grid].m_array[getPos(x3, y3)].m_vnh * alpha
 				* (1 - beta);
-		k++;
+		k += alpha * (1 - beta);
 	}
 	if ((x4 >= 0) && (y4 >= 0) && (x4 < m_x) && (y4 < m_y) && !w4) {
 		v4 = m_grid[m_now_grid].m_array[getPos(x4, y4)].m_vnh * alpha * beta;
-		k++;
+		k += alpha * beta;
 	}
 //	std::cout << k << "Y" << x << "," << y << ";" << x1 << "," << y1 << ";"
 //			<< x2 << "," << y2 << ";" << x3 << "," << y3 << ";" << x4 << ","
 //			<< y4 << ";" << std::endl;
 
 	FSFloat newv = 0;
-	if (k != 0) {
-		newv = (v1 + v2 + v3 + v4) / k;
+	if (k > 1e-8) {
+		newv = (v1 + v2 + v3 + v4) ;
 	}
 
 	u = newu;
@@ -456,21 +464,24 @@ void Simulation::Show() {
 		FSFloat u, v;
 		FSFloat x = m_parts.front().x;
 		FSFloat y = m_parts.front().y;
+		FSFloat c = m_parts.front().c;
 		if (m_debug)
 			std::cout << "Old: " << x << "," << y << ";";
 		m_parts.pop_front();
 
 		if (m_Magnify) {
+			FSFloat zero_offset = 0.5 * (m_Magnitude - 1);
+			FSszie newx = round(x * m_Magnitude + zero_offset);
+			FSszie newy = round(y * m_Magnitude + zero_offset);
+
 			if (m_debug) {
-				std::cout << "NewMegDot: " << round((x + 0.5) * m_Magnitude)
-						<< "," << round((y + 0.5) * m_Magnitude);
+				std::cout << "NewMegDot: " << newx << "," << newy;
 			}
-			m_mag_pixel_data[getMegaPos(round((x + 0.5) * m_Magnitude),
-					round((y + 0.5) * m_Magnitude))] = Make_Pixel(255, 255,
-					255);
+			m_mag_pixel_data[getMegaPos(newx, newy)] = Make_Pixel(
+					round(255 * c), round(255 * c), round(255 * c));
 		} else {
-			m_pixel_data[getPixelPos(round(x + 0.5), round(y + 0.5))] =
-					Make_Pixel(255, 255, 255);
+			m_pixel_data[getPixelPos(round(x), round(y))] = Make_Pixel(
+					round(255 * c), round(255 * c), round(255 * c));
 		}
 
 		Interpolate(x, y, u, v);
@@ -483,19 +494,31 @@ void Simulation::Show() {
 		if ((x > -0.5) && (y > -0.5) && (x < m_width - 0.5)
 				&& (y < m_height - 0.5)) {
 			if ((x > 0) || (y > 0)) {
-				m_parts.push_back(Partical(x, y));
+				m_parts.push_back(Partical(x, y, c));
 			}
 		}
 	}
 
 	if ((q_size == 0) || (!m_debug)) {
 		if (m_lastshow < 1e-8) {
-			FSFloat oneovernp1 = 1.0 / (m_pps + 1);
-			for (FSszie i = 1; i <= m_pps; ++i) {
-				for (FSszie j = 1; j <= m_pps; ++j) {
-					m_parts.push_back(
-							Partical(m_width - 1.5 + i * oneovernp1,
-									m_height - 1.5 + j * oneovernp1));
+			m_colorRatio *= m_colorMul;
+
+			if ((1 - m_colorRatio < 1e-8) || (m_colorRatio < 0.5)) {
+				m_colorMul = 1 / m_colorMul;
+			}
+
+			FSszie x, y;
+			for (size_t i = 0; i < m_sps.size(); ++i) {
+				FSFloat oneovernp1 = 1.0 / (m_pps + 1);
+				x = m_sps[i].x;
+				y = m_sps[i].y;
+				for (FSszie i = 1; i <= m_pps; ++i) {
+					for (FSszie j = 1; j <= m_pps; ++j) {
+						m_parts.push_back(
+								Partical(x - 0.5 + i * oneovernp1,
+										y - 0.5 + j * oneovernp1,
+										m_colorRatio));
+					}
 				}
 			}
 		}
@@ -734,6 +757,10 @@ void Simulation::ChangePartsPerShow(FSszie pps) {
 
 void Simulation::SetDebugFlag() {
 	m_debug = true;
+}
+
+void Simulation::SetShowPoint(FSszie x, FSszie y) {
+	m_sps.push_back(ShowPoint(x, y));
 }
 
 FSszie Simulation::getPos(FSszie x, FSszie y) {

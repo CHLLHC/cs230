@@ -12,15 +12,24 @@
 
 #include <Eigen/SparseCholesky>
 #include <deque>
+#include <vector>
 
 typedef unsigned int MGLpixel;
 class Partical {
 public:
-	Partical(FSFloat x, FSFloat y, MGLpixel c) :
-			x(x), y(y) {
-
+	Partical(FSFloat x, FSFloat y, FSFloat c) :
+			x(x), y(y), c(c) {
 	}
 	FSFloat x, y;
+	FSFloat c;
+};
+
+class ShowPoint {
+public:
+	ShowPoint(FSszie x, FSszie y) :
+			x(x), y(y) {
+	}
+	FSszie x, y;
 };
 
 inline MGLpixel Make_Pixel(int r, int g, int b) {
@@ -45,6 +54,7 @@ public:
 	void ChangePartsPerShow(FSszie pps);
 	void SetMagnify();
 	void SetDebugFlag();
+	void SetShowPoint(FSszie x, FSszie y);
 
 private:
 
@@ -85,6 +95,8 @@ private:
 	bool m_debug;
 	FSFloat m_pitv, m_lastshow;
 	FSszie m_pps;
+	FSFloat m_colorRatio, m_colorMul;
+	std::vector<ShowPoint> m_sps;
 };
 
 #endif /* PROJ3_SIMS_H_ */
