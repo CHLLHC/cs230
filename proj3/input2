@@ -1,0 +1,11 @@
+size 3 3
+mag 32
+wmag 10
+delta 0.01
+pitv 0.1
+cellp 0 0 0.1
+cellp 2 1 10
+wall 1 1 1
+wall 1 2 0
+sp 2 1
+pps 3

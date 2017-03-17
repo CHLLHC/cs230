@@ -1,0 +1,121 @@
+size 30 30
+mag 5
+wmag 6
+delta 0.1
+pitv 2
+cellp 0 0 0.1
+cellp 0 1 0.1
+cellp 0 2 0.1
+cellp 0 3 0.1
+cellp 0 4 0.1
+cellp 0 5 0.1
+cellp 0 6 0.1
+cellp 0 7 0.1
+cellp 0 8 0.1
+cellp 0 9 0.1
+cellp 0 10 0.1
+cellp 0 11 0.1
+cellp 0 12 0.1
+cellp 0 13 0.1
+cellp 0 14 0.1
+cellp 0 15 0.1
+cellp 0 16 0.1
+cellp 0 17 0.1
+cellp 0 18 0.1
+cellp 0 19 0.1
+cellp 0 20 0.1
+cellp 0 21 0.1
+cellp 0 22 0.1
+cellp 0 23 0.1
+cellp 0 24 0.1
+cellp 0 25 0.1
+cellp 0 26 0.1
+cellp 0 27 0.1
+cellp 0 28 0.1
+cellp 0 29 0.1
+cellp 29 0 10
+cellp 29 1 10
+cellp 29 2 10
+cellp 29 3 10
+cellp 29 4 10
+cellp 29 5 10
+cellp 29 6 10
+cellp 29 7 10
+cellp 29 8 10
+cellp 29 9 10
+cellp 29 10 10
+cellp 29 11 10
+cellp 29 12 10
+cellp 29 13 10
+cellp 29 14 10
+cellp 29 15 10
+cellp 29 16 10
+cellp 29 17 10
+cellp 29 18 10
+cellp 29 19 10
+cellp 29 20 10
+cellp 29 21 10
+cellp 29 22 10
+cellp 29 23 10
+cellp 29 24 10
+cellp 29 25 10
+cellp 29 26 10
+cellp 29 27 10
+cellp 29 28 10
+cellp 29 29 10
+sp 29 0
+sp 29 1
+sp 29 2
+sp 29 3
+sp 29 4
+sp 29 5
+sp 29 6
+sp 29 7
+sp 29 8
+sp 29 9
+sp 29 10
+sp 29 11
+sp 29 12
+sp 29 13
+sp 29 14
+sp 29 15
+sp 29 16
+sp 29 17
+sp 29 18
+sp 29 19
+sp 29 20
+sp 29 21
+sp 29 22
+sp 29 23
+sp 29 24
+sp 29 25
+sp 29 26
+sp 29 27
+sp 29 28
+sp 29 29
+wall 20 7 1
+wall 20 8 1
+wall 20 9 1
+wall 20 10 1
+wall 20 11 1
+wall 20 12 1
+wall 20 13 1
+wall 20 14 1
+wall 20 15 1
+wall 20 16 1
+wall 20 17 1
+wall 10 18 0
+wall 11 18 0
+wall 12 18 0
+wall 13 18 0
+wall 14 18 0
+wall 15 18 0
+wall 15 18 1
+wall 15 19 1
+wall 15 20 1
+wall 15 21 1
+wall 15 22 1
+wall 15 23 1
+wall 15 24 1
+wall 15 25 1
+pps 2

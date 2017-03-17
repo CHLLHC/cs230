@@ -1,0 +1,292 @@
+size 160 90
+mag 2
+wmag 4
+delta 0.1
+pitv 2
+cellp 0 0 0.1
+cellp 0 1 0.1
+cellp 0 2 0.1
+cellp 0 3 0.1
+cellp 0 4 0.1
+cellp 0 5 0.1
+cellp 0 6 0.1
+cellp 0 7 0.1
+cellp 0 8 0.1
+cellp 0 9 0.1
+cellp 0 10 0.1
+cellp 0 11 0.1
+cellp 0 12 0.1
+cellp 0 13 0.1
+cellp 0 14 0.1
+cellp 0 15 0.1
+cellp 0 16 0.1
+cellp 0 17 0.1
+cellp 0 18 0.1
+cellp 0 19 0.1
+cellp 0 20 0.1
+cellp 0 21 0.1
+cellp 0 22 0.1
+cellp 0 23 0.1
+cellp 0 24 0.1
+cellp 0 25 0.1
+cellp 0 26 0.1
+cellp 0 27 0.1
+cellp 0 28 0.1
+cellp 0 29 0.1
+cellp 0 30 0.1
+cellp 0 31 0.1
+cellp 0 32 0.1
+cellp 0 33 0.1
+cellp 0 34 0.1
+cellp 0 35 0.1
+cellp 0 36 0.1
+cellp 0 37 0.1
+cellp 0 38 0.1
+cellp 0 39 0.1
+cellp 0 40 0.1
+cellp 0 41 0.1
+cellp 0 42 0.1
+cellp 0 43 0.1
+cellp 0 44 0.1
+cellp 0 45 0.1
+cellp 0 46 0.1
+cellp 0 47 0.1
+cellp 0 48 0.1
+cellp 0 49 0.1
+cellp 0 50 0.1
+cellp 0 51 0.1
+cellp 0 52 0.1
+cellp 0 53 0.1
+cellp 0 54 0.1
+cellp 0 55 0.1
+cellp 0 56 0.1
+cellp 0 57 0.1
+cellp 0 58 0.1
+cellp 0 59 0.1
+cellp 0 60 0.1
+cellp 0 61 0.1
+cellp 0 62 0.1
+cellp 0 63 0.1
+cellp 0 64 0.1
+cellp 0 65 0.1
+cellp 0 66 0.1
+cellp 0 67 0.1
+cellp 0 68 0.1
+cellp 0 69 0.1
+cellp 0 70 0.1
+cellp 0 71 0.1
+cellp 0 72 0.1
+cellp 0 73 0.1
+cellp 0 74 0.1
+cellp 0 75 0.1
+cellp 0 76 0.1
+cellp 0 77 0.1
+cellp 0 78 0.1
+cellp 0 79 0.1
+cellp 0 80 0.1
+cellp 0 81 0.1
+cellp 0 82 0.1
+cellp 0 83 0.1
+cellp 0 84 0.1
+cellp 0 85 0.1
+cellp 0 86 0.1
+cellp 0 87 0.1
+cellp 0 88 0.1
+cellp 0 89 0.1
+cellp 120 30 10
+cellp 120 31 10
+cellp 120 32 10
+cellp 120 33 10
+cellp 120 34 10
+cellp 120 35 10
+cellp 120 36 10
+cellp 120 37 10
+cellp 120 38 10
+cellp 120 39 10
+cellp 120 40 10
+cellp 120 41 10
+cellp 120 42 10
+cellp 120 43 10
+cellp 120 44 10
+cellp 120 45 10
+cellp 120 46 10
+cellp 120 47 10
+cellp 120 48 10
+cellp 120 49 10
+cellp 120 50 10
+cellp 120 51 10
+cellp 120 52 10
+cellp 120 53 10
+cellp 120 54 10
+cellp 120 55 10
+cellp 120 56 10
+cellp 120 57 10
+cellp 120 58 10
+cellp 120 59 10
+cellp 120 60 10
+sp 120 30
+sp 120 31
+sp 120 32
+sp 120 33
+sp 120 34
+sp 120 35
+sp 120 36
+sp 120 37
+sp 120 38
+sp 120 39
+sp 120 40
+sp 120 41
+sp 120 42
+sp 120 43
+sp 120 44
+sp 120 45
+sp 120 46
+sp 120 47
+sp 120 48
+sp 120 49
+sp 120 50
+sp 120 51
+sp 120 52
+sp 120 53
+sp 120 54
+sp 120 55
+sp 120 56
+sp 120 57
+sp 120 58
+sp 120 59
+sp 120 60
+wall 80 30 0
+wall 81 30 0
+wall 82 30 0
+wall 83 30 0
+wall 84 30 0
+wall 85 30 0
+wall 86 30 0
+wall 87 30 0
+wall 88 30 0
+wall 89 30 0
+wall 90 30 0
+wall 91 30 0
+wall 92 30 0
+wall 93 30 0
+wall 94 30 0
+wall 95 30 0
+wall 96 30 0
+wall 97 30 0
+wall 98 30 0
+wall 99 30 0
+wall 100 30 0
+wall 101 30 0
+wall 102 30 0
+wall 103 30 0
+wall 104 30 0
+wall 105 30 0
+wall 106 30 0
+wall 107 30 0
+wall 108 30 0
+wall 109 30 0
+wall 110 30 0
+wall 111 30 0
+wall 112 30 0
+wall 113 30 0
+wall 114 30 0
+wall 115 30 0
+wall 116 30 0
+wall 117 30 0
+wall 118 30 0
+wall 119 30 0
+wall 120 30 0
+wall 80 61 0
+wall 81 61 0
+wall 82 61 0
+wall 83 61 0
+wall 84 61 0
+wall 85 61 0
+wall 86 61 0
+wall 87 61 0
+wall 88 61 0
+wall 89 61 0
+wall 90 61 0
+wall 91 61 0
+wall 92 61 0
+wall 93 61 0
+wall 94 61 0
+wall 95 61 0
+wall 96 61 0
+wall 97 61 0
+wall 98 61 0
+wall 99 61 0
+wall 100 61 0
+wall 101 61 0
+wall 102 61 0
+wall 103 61 0
+wall 104 61 0
+wall 105 61 0
+wall 106 61 0
+wall 107 61 0
+wall 108 61 0
+wall 109 61 0
+wall 110 61 0
+wall 111 61 0
+wall 112 61 0
+wall 113 61 0
+wall 114 61 0
+wall 115 61 0
+wall 116 61 0
+wall 117 61 0
+wall 118 61 0
+wall 119 61 0
+wall 120 61 0
+wall 79 30 1
+wall 79 31 1
+wall 79 32 1
+wall 79 33 1
+wall 79 34 1
+wall 79 35 1
+wall 79 36 1
+wall 79 37 1
+wall 79 38 1
+wall 79 39 1
+wall 79 40 1
+wall 79 51 1
+wall 79 52 1
+wall 79 53 1
+wall 79 54 1
+wall 79 55 1
+wall 79 56 1
+wall 79 57 1
+wall 79 58 1
+wall 79 59 1
+wall 79 60 1
+wall 120 30 1
+wall 120 31 1
+wall 120 32 1
+wall 120 33 1
+wall 120 34 1
+wall 120 35 1
+wall 120 36 1
+wall 120 37 1
+wall 120 38 1
+wall 120 39 1
+wall 120 40 1
+wall 120 41 1
+wall 120 42 1
+wall 120 43 1
+wall 120 44 1
+wall 120 45 1
+wall 120 46 1
+wall 120 47 1
+wall 120 48 1
+wall 120 49 1
+wall 120 50 1
+wall 120 51 1
+wall 120 52 1
+wall 120 53 1
+wall 120 54 1
+wall 120 55 1
+wall 120 56 1
+wall 120 57 1
+wall 120 58 1
+wall 120 59 1
+wall 120 60 1
+pps 2

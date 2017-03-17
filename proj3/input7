@@ -1,0 +1,389 @@
+size 160 90
+mag 2
+wmag 4
+delta 0.1
+pitv 2
+cellp 0 0 0.1
+cellp 0 1 0.1
+cellp 0 2 0.1
+cellp 0 3 0.1
+cellp 0 4 0.1
+cellp 0 5 0.1
+cellp 0 6 0.1
+cellp 0 7 0.1
+cellp 0 8 0.1
+cellp 0 9 0.1
+cellp 0 10 0.1
+cellp 0 11 0.1
+cellp 0 12 0.1
+cellp 0 13 0.1
+cellp 0 14 0.1
+cellp 0 15 0.1
+cellp 0 16 0.1
+cellp 0 17 0.1
+cellp 0 18 0.1
+cellp 0 19 0.1
+cellp 0 20 0.1
+cellp 0 21 0.1
+cellp 0 22 0.1
+cellp 0 23 0.1
+cellp 0 24 0.1
+cellp 0 25 0.1
+cellp 0 26 0.1
+cellp 0 27 0.1
+cellp 0 28 0.1
+cellp 0 29 0.1
+cellp 0 30 0.1
+cellp 0 31 0.1
+cellp 0 32 0.1
+cellp 0 33 0.1
+cellp 0 34 0.1
+cellp 0 35 0.1
+cellp 0 36 0.1
+cellp 0 37 0.1
+cellp 0 38 0.1
+cellp 0 39 0.1
+cellp 0 40 0.1
+cellp 0 41 0.1
+cellp 0 42 0.1
+cellp 0 43 0.1
+cellp 0 44 0.1
+cellp 0 45 0.1
+cellp 0 46 0.1
+cellp 0 47 0.1
+cellp 0 48 0.1
+cellp 0 49 0.1
+cellp 0 50 0.1
+cellp 0 51 0.1
+cellp 0 52 0.1
+cellp 0 53 0.1
+cellp 0 54 0.1
+cellp 0 55 0.1
+cellp 0 56 0.1
+cellp 0 57 0.1
+cellp 0 58 0.1
+cellp 0 59 0.1
+cellp 0 60 0.1
+cellp 0 61 0.1
+cellp 0 62 0.1
+cellp 0 63 0.1
+cellp 0 64 0.1
+cellp 0 65 0.1
+cellp 0 66 0.1
+cellp 0 67 0.1
+cellp 0 68 0.1
+cellp 0 69 0.1
+cellp 0 70 0.1
+cellp 0 71 0.1
+cellp 0 72 0.1
+cellp 0 73 0.1
+cellp 0 74 0.1
+cellp 0 75 0.1
+cellp 0 76 0.1
+cellp 0 77 0.1
+cellp 0 78 0.1
+cellp 0 79 0.1
+cellp 0 80 0.1
+cellp 0 81 0.1
+cellp 0 82 0.1
+cellp 0 83 0.1
+cellp 0 84 0.1
+cellp 0 85 0.1
+cellp 0 86 0.1
+cellp 0 87 0.1
+cellp 0 88 0.1
+cellp 0 89 0.1
+cellp 159 0 10
+cellp 159 1 10
+cellp 159 2 10
+cellp 159 3 10
+cellp 159 4 10
+cellp 159 5 10
+cellp 159 6 10
+cellp 159 7 10
+cellp 159 8 10
+cellp 159 9 10
+cellp 159 10 10
+cellp 159 11 10
+cellp 159 12 10
+cellp 159 13 10
+cellp 159 14 10
+cellp 159 15 10
+cellp 159 16 10
+cellp 159 17 10
+cellp 159 18 10
+cellp 159 19 10
+cellp 159 20 10
+cellp 159 21 10
+cellp 159 22 10
+cellp 159 23 10
+cellp 159 24 10
+cellp 159 25 10
+cellp 159 26 10
+cellp 159 27 10
+cellp 159 28 10
+cellp 159 29 10
+cellp 159 30 10
+cellp 159 31 10
+cellp 159 32 10
+cellp 159 33 10
+cellp 159 34 10
+cellp 159 35 10
+cellp 159 36 10
+cellp 159 37 10
+cellp 159 38 10
+cellp 159 39 10
+cellp 159 40 10
+cellp 159 41 10
+cellp 159 42 10
+cellp 159 43 10
+cellp 159 44 10
+cellp 159 45 10
+cellp 159 46 10
+cellp 159 47 10
+cellp 159 48 10
+cellp 159 49 10
+cellp 159 50 10
+cellp 159 51 10
+cellp 159 52 10
+cellp 159 53 10
+cellp 159 54 10
+cellp 159 55 10
+cellp 159 56 10
+cellp 159 57 10
+cellp 159 58 10
+cellp 159 59 10
+cellp 159 60 10
+cellp 159 61 10
+cellp 159 62 10
+cellp 159 63 10
+cellp 159 64 10
+cellp 159 65 10
+cellp 159 66 10
+cellp 159 67 10
+cellp 159 68 10
+cellp 159 69 10
+cellp 159 70 10
+cellp 159 71 10
+cellp 159 72 10
+cellp 159 73 10
+cellp 159 74 10
+cellp 159 75 10
+cellp 159 76 10
+cellp 159 77 10
+cellp 159 78 10
+cellp 159 79 10
+cellp 159 80 10
+cellp 159 81 10
+cellp 159 82 10
+cellp 159 83 10
+cellp 159 84 10
+cellp 159 85 10
+cellp 159 86 10
+cellp 159 87 10
+cellp 159 88 10
+cellp 159 89 10
+sp 159 0
+sp 159 1
+sp 159 2
+sp 159 3
+sp 159 4
+sp 159 5
+sp 159 6
+sp 159 7
+sp 159 8
+sp 159 9
+sp 159 10
+sp 159 11
+sp 159 12
+sp 159 13
+sp 159 14
+sp 159 15
+sp 159 16
+sp 159 17
+sp 159 18
+sp 159 19
+sp 159 20
+sp 159 21
+sp 159 22
+sp 159 23
+sp 159 24
+sp 159 25
+sp 159 26
+sp 159 27
+sp 159 28
+sp 159 29
+sp 159 30
+sp 159 31
+sp 159 32
+sp 159 33
+sp 159 34
+sp 159 35
+sp 159 36
+sp 159 37
+sp 159 38
+sp 159 39
+sp 159 40
+sp 159 41
+sp 159 42
+sp 159 43
+sp 159 44
+sp 159 45
+sp 159 46
+sp 159 47
+sp 159 48
+sp 159 49
+sp 159 50
+sp 159 51
+sp 159 52
+sp 159 53
+sp 159 54
+sp 159 55
+sp 159 56
+sp 159 57
+sp 159 58
+sp 159 59
+sp 159 60
+sp 159 61
+sp 159 62
+sp 159 63
+sp 159 64
+sp 159 65
+sp 159 66
+sp 159 67
+sp 159 68
+sp 159 69
+sp 159 70
+sp 159 71
+sp 159 72
+sp 159 73
+sp 159 74
+sp 159 75
+sp 159 76
+sp 159 77
+sp 159 78
+sp 159 79
+sp 159 80
+sp 159 81
+sp 159 82
+sp 159 83
+sp 159 84
+sp 159 85
+sp 159 86
+sp 159 87
+sp 159 88
+sp 159 89
+wall 80 30 0
+wall 81 30 0
+wall 82 30 0
+wall 83 30 0
+wall 84 30 0
+wall 85 30 0
+wall 86 30 0
+wall 87 30 0
+wall 88 30 0
+wall 89 30 0
+wall 90 30 0
+wall 91 30 0
+wall 92 30 0
+wall 93 30 0
+wall 94 30 0
+wall 95 30 0
+wall 96 30 0
+wall 97 30 0
+wall 98 30 0
+wall 99 30 0
+wall 100 30 0
+wall 101 30 0
+wall 102 30 0
+wall 103 30 0
+wall 104 30 0
+wall 105 30 0
+wall 106 30 0
+wall 107 30 0
+wall 108 30 0
+wall 109 30 0
+wall 110 30 0
+wall 111 30 0
+wall 112 30 0
+wall 113 30 0
+wall 114 30 0
+wall 115 30 0
+wall 116 30 0
+wall 117 30 0
+wall 118 30 0
+wall 119 30 0
+wall 120 30 0
+wall 120 30 1
+wall 120 31 1
+wall 120 32 1
+wall 120 33 1
+wall 120 34 1
+wall 120 35 1
+wall 120 36 1
+wall 120 37 1
+wall 120 38 1
+wall 120 39 1
+wall 120 40 1
+wall 120 41 1
+wall 120 42 1
+wall 120 43 1
+wall 120 44 1
+wall 120 45 1
+wall 120 46 1
+wall 120 47 1
+wall 120 48 1
+wall 120 49 1
+wall 120 50 1
+wall 120 51 1
+wall 120 52 1
+wall 120 53 1
+wall 120 54 1
+wall 120 55 1
+wall 120 56 1
+wall 120 57 1
+wall 120 58 1
+wall 120 59 1
+wall 120 60 1
+wall 80 61 0
+wall 81 61 0
+wall 82 61 0
+wall 83 61 0
+wall 84 61 0
+wall 85 61 0
+wall 86 61 0
+wall 87 61 0
+wall 88 61 0
+wall 89 61 0
+wall 90 61 0
+wall 91 61 0
+wall 92 61 0
+wall 93 61 0
+wall 94 61 0
+wall 95 61 0
+wall 96 61 0
+wall 97 61 0
+wall 98 61 0
+wall 99 61 0
+wall 100 61 0
+wall 101 61 0
+wall 102 61 0
+wall 103 61 0
+wall 104 61 0
+wall 105 61 0
+wall 106 61 0
+wall 107 61 0
+wall 108 61 0
+wall 109 61 0
+wall 110 61 0
+wall 111 61 0
+wall 112 61 0
+wall 113 61 0
+wall 114 61 0
+wall 115 61 0
+wall 116 61 0
+wall 117 61 0
+wall 118 61 0
+wall 119 61 0
+wall 120 61 0
+pps 2
